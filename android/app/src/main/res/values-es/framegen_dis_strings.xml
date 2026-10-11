@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="framegen_generated_count">Fotogramas interpolados: %1$d</string>
+    <string name="framegen_section_engine">Motor</string>
+    <string name="framegen_engine_lsfg">Lossless Scaling</string>
+    <string name="framegen_engine_lsfg_detail">requiere una DLL</string>
+    <string name="framegen_engine_lsfg_note">Utiliza los shaders de Lossless Scaling. Importa una Lossless.dll compatible para activar este motor.</string>
+    <string name="framegen_engine_dis">DIS</string>
+    <string name="framegen_engine_dis_detail">incluido en la app</string>
+    <string name="framegen_engine_dis_note">Dense Inverse Search está incluido en la app. No necesita ninguna DLL. Su disponibilidad depende de la GPU y el driver.</string>
+    <string name="framegen_enable_blocked">Importa Lossless.dll o selecciona DIS</string>
+    <string name="framegen_label_dis_scale">Resolución del movimiento</string>
+    <string name="framegen_dis_preset_light">Ligero</string>
+    <string name="framegen_dis_preset_fast">Rápido</string>
+    <string name="framegen_dis_preset_balanced">Equilibrado</string>
+    <string name="framegen_dis_preset_quality">Calidad</string>
+    <string name="framegen_dis_scale_detail">%1$d px</string>
+    <string name="framegen_dis_scale_note">El movimiento se estima a %1$d píxeles en el lado más corto. Un valor menor reduce el coste; uno mayor ayuda a seguir detalles pequeños o rápidos.</string>
+</resources>

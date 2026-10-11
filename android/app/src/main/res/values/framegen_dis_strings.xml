@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="framegen_generated_count">Interpolated frames: %1$d</string>
+    <string name="framegen_section_engine">Engine</string>
+    <string name="framegen_engine_lsfg">Lossless Scaling</string>
+    <string name="framegen_engine_lsfg_detail">needs a DLL</string>
+    <string name="framegen_engine_lsfg_note">Uses the Lossless Scaling shader chain. Import a compatible Lossless.dll to enable this engine.</string>
+    <string name="framegen_engine_dis">DIS</string>
+    <string name="framegen_engine_dis_detail">built in</string>
+    <string name="framegen_engine_dis_note">Dense Inverse Search is included in the app. No DLL is needed. Availability depends on GPU and driver support.</string>
+    <string name="framegen_label_dis_scale">Resolution scale</string>
+    <string name="framegen_dis_preset_light">Light</string>
+    <string name="framegen_dis_preset_fast">Fast</string>
+    <string name="framegen_dis_preset_balanced">Balanced</string>
+    <string name="framegen_dis_preset_quality">Quality</string>
+    <string name="framegen_dis_scale_detail">%1$d px</string>
+    <string name="framegen_dis_scale_note">Motion is searched at %1$d pixels on the shorter side of the frame, whatever the game outputs. Lower is cheaper; higher tracks small or fast detail better.</string>
+</resources>

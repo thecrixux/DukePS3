@@ -76,6 +76,7 @@ object BenchmarkCapture {
                     val report = JSONObject(RPCS3.instance.benchmarkStop())
                     val frames = report.getJSONArray("frames")
                     report.remove("frames")
+                    details.put("runtime_at_end", JSONObject(RPCS3.instance.benchmarkContext()))
                     report.put("metadata", details)
                     val output = File(app.cacheDir, "benchmark-latest.zip")
                     val temporary = File(app.cacheDir, "benchmark-pending.zip")
@@ -150,7 +151,7 @@ fun BenchmarkPanel() {
         }
         TextButton(
             enabled = BenchmarkCapture.latest != null && !BenchmarkCapture.busy && !BenchmarkCapture.recording,
-            onClick = { exporter.launch("PS3Native-benchmark-${System.currentTimeMillis()}.zip") }
+            onClick = { exporter.launch("DukePS3-benchmark-${System.currentTimeMillis()}.zip") }
         ) { Text(stringResource(R.string.benchmark_export)) }
         if (BenchmarkCapture.busy) Text(stringResource(R.string.benchmark_busy))
         if (BenchmarkCapture.status.isNotEmpty()) SettingsHint(text = BenchmarkCapture.status)

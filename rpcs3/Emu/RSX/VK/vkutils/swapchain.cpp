@@ -227,6 +227,9 @@ namespace vk
 
 	bool swapchain_WSI::init()
 	{
+#ifdef ANDROID
+		m_transfer_source_enabled = false;
+#endif
 		if (dev.get_present_queue() == VK_NULL_HANDLE)
 		{
 			rsx_log.error("Cannot create WSI swapchain without a present queue");
@@ -283,6 +286,16 @@ namespace vk
 			break;
 		}
 
+#ifdef ANDROID
+		// Intermediates and the real frame are queued in order. Mailbox would replace
+		// those intermediates before a vblank, counting work the user never sees.
+		if (vk::frame_generation_reserved_images() &&
+			(surface_descriptors.supportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_SRC_BIT))
+		{
+			preferred_modes.clear(); // FIFO is guaranteed by Vulkan.
+		}
+#endif
+
 		bool mode_found = false;
 		for (VkPresentModeKHR preferred_mode : preferred_modes)
 		{
@@ -312,7 +325,16 @@ namespace vk
 		}
 
 #ifdef ANDROID
-		nb_swap_images += vk::frame_generation_reserved_images();
+		const bool supports_transfer_source =
+			(surface_descriptors.supportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_SRC_BIT) != 0;
+		if (supports_transfer_source)
+		{
+			nb_swap_images += vk::frame_generation_reserved_images();
+		}
+		else
+		{
+			rsx_log.warning("Swapchain: transfer-source usage is unavailable; frame generation will be disabled.");
+		}
 #endif
 
 		if (surface_descriptors.maxImageCount > 0 && nb_swap_images > surface_descriptors.maxImageCount)
@@ -333,6 +355,12 @@ namespace vk
 		swap_info.imageColorSpace = m_color_space;
 
 		swap_info.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+#ifdef ANDROID
+		if (supports_transfer_source)
+		{
+			swap_info.imageUsage |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+		}
+#endif
 		swap_info.preTransform = pre_transform;
 		swap_info.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 		swap_info.imageArrayLayers = 1;
@@ -361,7 +389,10 @@ namespace vk
 		rsx_log.notice("Swapchain: requesting full screen exclusive mode %d.", static_cast<int>(full_screen_exclusive_info.fullScreenExclusive));
 #endif
 
-		_vkCreateSwapchainKHR(dev, &swap_info, nullptr, &m_vk_swapchain);
+		CHECK_RESULT(_vkCreateSwapchainKHR(dev, &swap_info, nullptr, &m_vk_swapchain));
+#ifdef ANDROID
+		m_transfer_source_enabled = supports_transfer_source;
+#endif
 
 		if (old_swapchain)
 		{

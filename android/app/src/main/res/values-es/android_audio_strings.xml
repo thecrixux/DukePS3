@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="android_audio_backend">Salida de audio Android</string>
+    <string name="android_audio_backend_auto">Automática (comportamiento actual)</string>
+    <string name="android_audio_backend_hint">Detén el juego antes de cambiar esta preferencia y vuelve a iniciarlo. Si no está disponible, se puede usar otra salida. La salida real se guarda en las mediciones de rendimiento.</string>
+</resources>

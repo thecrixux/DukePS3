@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="duke_gold">#FFB800</color>
+    <color name="duke_highlight">#FFC21A</color>
+    <color name="duke_orange">#FF8A00</color>
+    <color name="duke_background">#101012</color>
+    <color name="duke_surface">#18181B</color>
+    <color name="duke_selection">#24FFB800</color>
+    <color name="duke_text_primary">#F2F2F2</color>
+    <color name="duke_text_secondary">#9A9AA2</color>
+</resources>

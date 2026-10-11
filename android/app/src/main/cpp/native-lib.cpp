@@ -4,6 +4,7 @@
 #include "Crypto/unpkg.h"
 #include "Crypto/unself.h"
 #include "Emu/Audio/Cubeb/CubebBackend.h"
+#include "Emu/Audio/AndroidAudioDiagnostics.h"
 #include "Emu/Audio/Null/NullAudioBackend.h"
 #include "Emu/Cell/Modules/cellMsgDialog.h"
 #include "Emu/Cell/Modules/cellSysutil.h"
@@ -22,6 +23,7 @@
 #include "Emu/RSX/Overlays/overlay_save_dialog.h"
 #include "Emu/RSX/RSXThread.h"
 #include "Emu/RSX/VK/VKFrameGeneration.h"
+#include "Emu/RSX/VK/VKDiagnostics.h"
 #include "Emu/RSX/VK/VKGSRender.h"
 #include "Emu/RSX/VK/lsfg/lsfg_dll.h"
 #include "Emu/RSX/VK/vkutils/instance.h"
@@ -1282,13 +1284,9 @@ private:
     }
 
     std::vector<std::string> dir_queue;
+    // ppu_precompile already walks descendants. Pre-enumerating every directory
+    // makes overlapping roots repeat scans, ELF analysis and cache checks.
     dir_queue.push_back(rootPath.string());
-
-    for (auto entry : std::filesystem::recursive_directory_iterator(rootPath)) {
-      if (entry.is_directory()) {
-        dir_queue.push_back(entry.path().string());
-      }
-    }
 
     std::vector<ppu_module<lv2_obj> *> mod_list;
     const bool aborting = pendingBootRequests.load() != 0;
@@ -1932,6 +1930,47 @@ Java_net_rpcs3_RPCS3_benchmarkContext(JNIEnv *env, jobject) {
   context["title_id"] = Emu.GetTitleID();
   context["runtime_config_yaml"] = g_cfg.to_string();
   context["display_refresh_hz"] = vk::frame_generation_refresh_rate();
+  context["video"] = {
+      {"ps3_video_mode", g_cfg.video.resolution.to_string()},
+      {"render_scale_percent", g_cfg.video.resolution_scale_percent.get()}};
+  const auto video = vk::g_renderer_diagnostics.get();
+  context["video"]["runtime"] = {
+      {"available", video.available}, {"gpu", video.gpu_name},
+      {"driver", video.driver_name}, {"driver_version", video.driver_version},
+      {"vulkan_version", video.vulkan_version}, {"rpcs3_driver_vendor_id", video.driver_vendor_id},
+      {"guest_width", video.guest_width}, {"guest_height", video.guest_height},
+      {"guest_pitch_bytes", video.guest_pitch_bytes},
+      {"source_width", video.source_width}, {"source_height", video.source_height},
+      {"output_width", video.output_width}, {"output_height", video.output_height},
+      {"source_found", video.source_found}};
+  const auto audio = android_audio::g_diagnostics.get();
+  context["audio"] = {
+      {"preference", audio.preference}, {"actual_backend", audio.backend},
+      {"stream_open", audio.stream_open}, {"playing", audio.playing},
+      {"stream_generation", audio.stream_generation},
+      {"sampling_rate", audio.rate}, {"channels", audio.channels},
+      {"bytes_per_sample", audio.bytes_per_sample},
+      {"requested_latency_frames", audio.requested_latency_frames},
+      {"delivered_callbacks", audio.delivered_callbacks}, {"requested_frames", audio.requested_frames},
+      {"short_read_callbacks", audio.short_read_callbacks}, {"missing_frames", audio.missing_frames},
+      {"mutex_timeout_callbacks", audio.mutex_timeout_callbacks},
+      {"reset_silence_callbacks", audio.reset_silence_callbacks},
+      {"missing_callback_silence_callbacks", audio.missing_callback_silence_callbacks},
+      {"counter_scope", "application_supply_since_stream_open; independently_sampled; not_hardware_xruns"}};
+  const auto fg = vk::get_frame_generation_settings();
+  context["frame_generation"] = {
+      {"enabled", fg.enabled},
+      {"engine", fg.engine == vk::frame_generation_engine::dis ? "DIS" : "LSFG"},
+      {"target_fps", fg.target_rate}, {"multiplier", fg.multiplier},
+      {"lsfg_flow_scale_percent", fg.flow_scale_percent}, {"dis_min_side", fg.dis_min_side}};
+  const auto runtime = vk::get_frame_generation_status();
+  context["frame_generation"]["runtime"] = {
+      {"ready", runtime.ready}, {"unsupported", runtime.unsupported},
+      {"presentation_width", runtime.width}, {"presentation_height", runtime.height},
+      {"flow_width", runtime.flow_width}, {"flow_height", runtime.flow_height},
+      {"guest_width", runtime.guest_width}, {"guest_height", runtime.guest_height},
+      {"present_requests", vk::frame_generation_presented_count()},
+      {"generated_present_requests", vk::frame_generation_generated_count()}};
   return wrap(env, context.dump());
 }
 
@@ -1966,11 +2005,13 @@ Java_net_rpcs3_RPCS3_perfMetrics(JNIEnv *env, jobject) {
   }
 
   return wrap(env, fmt::format(R"({"fps":%.2f,"frametime":%.3f,"rsxLoad":%d,)"
-                               R"("renderer":"%s","presented":%u,"generated":%u})",
+                               R"("renderer":"%s","presented":%llu,"generated":%llu,"frameGenEnabled":%s,"refreshHz":%.2f})",
                                g_hud_fps.load(), g_hud_frametime.load(),
                                rsxLoad, g_cfg.video.renderer.to_string(),
                                vk::frame_generation_presented_count(),
-                               vk::frame_generation_generated_count()));
+                               vk::frame_generation_generated_count(),
+                               vk::get_frame_generation_settings().enabled ? "true" : "false",
+                               vk::frame_generation_refresh_rate()));
 }
 
 extern "C" JNIEXPORT jint JNICALL Java_net_rpcs3_RPCS3_frameGenImport(
@@ -2010,23 +2051,28 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_rpcs3_RPCS3_frameGenState(
   return wrap(env, fmt::format(
                        R"({"imported":%s,"status":%d,"variant":"%s","modules":%u,)"
                        R"("sourceSize":%u,"ready":%s,"unsupported":%s,"width":%u,"height":%u,)"
-                       R"("flowWidth":%u,"flowHeight":%u,"guestWidth":%u,"guestHeight":%u})",
+                       R"("flowWidth":%u,"flowHeight":%u,"guestWidth":%u,"guestHeight":%u,"generatedFrames":%llu})",
                        imported ? "true" : "false", static_cast<int>(status),
                        lsfg_variant_name(info.variant), info.module_count,
                        info.source_size, runtime.ready ? "true" : "false",
                        runtime.unsupported ? "true" : "false", runtime.width,
                        runtime.height, runtime.flow_width, runtime.flow_height,
-                       runtime.guest_width, runtime.guest_height));
+                       runtime.guest_width, runtime.guest_height,
+                       vk::frame_generation_generated_count()));
 }
 
 extern "C" JNIEXPORT void JNICALL Java_net_rpcs3_RPCS3_frameGenConfigure(
     JNIEnv *, jobject, jboolean enabled, jint multiplier, jint targetRate,
-    jint flowScalePercent) {
+    jint flowScalePercent, jint engine, jint disMinSide) {
   vk::frame_generation_settings settings{};
   settings.enabled = enabled == JNI_TRUE;
   settings.multiplier = static_cast<u32>(std::max<jint>(multiplier, 2));
   settings.target_rate = static_cast<u32>(std::max<jint>(targetRate, 0));
   settings.flow_scale_percent = static_cast<u32>(std::max<jint>(flowScalePercent, 25));
+  settings.engine = engine == static_cast<jint>(vk::frame_generation_engine::dis)
+                        ? vk::frame_generation_engine::dis
+                        : vk::frame_generation_engine::lsfg;
+  settings.dis_min_side = static_cast<u32>(std::max<jint>(disMinSide, 0));
   vk::set_frame_generation_settings(settings);
 }
 

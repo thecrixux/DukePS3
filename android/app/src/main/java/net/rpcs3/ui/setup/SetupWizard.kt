@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.Settings
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,6 +17,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -45,7 +48,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -114,109 +119,113 @@ fun SetupWizard(
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(SettingsStyle.BgDeep)
-            .windowInsetsPadding(WindowInsets.safeDrawing)
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 24.dp, vertical = 28.dp)
-    ) {
-        Text(
-            text = stringResource(R.string.setup_welcome),
-            color = SettingsStyle.TextPrimary,
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold
+    Box(modifier = Modifier.fillMaxSize().background(SettingsStyle.BgDeep)) {
+        Image(
+            painter = painterResource(R.drawable.duke_welcome_background),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            alignment = Alignment.BottomCenter,
+            modifier = Modifier.fillMaxSize()
         )
-        Spacer(Modifier.height(6.dp))
-        Text(
-            text = stringResource(R.string.setup_intro),
-            color = SettingsStyle.TextSecondary,
-            fontSize = 13.sp
-        )
-
-        Spacer(Modifier.height(24.dp))
-
-        SetupStep(
-            index = 1,
-            icon = Icons.Outlined.Folder,
-            title = stringResource(R.string.setup_storage_title),
-            detail = stringResource(R.string.setup_storage_detail),
-            done = storageGranted,
-            actionLabel = stringResource(R.string.setup_allow),
-            onAction = { requestStorageAccess(context) }
-        )
-
-        Spacer(Modifier.height(12.dp))
-
-        SetupStep(
-            index = 2,
-            icon = Icons.Outlined.SystemUpdate,
-            title = stringResource(R.string.setup_firmware_title),
-            detail = firmwareVersion?.let { stringResource(R.string.setup_firmware_installed, it) }
-                ?: stringResource(R.string.setup_firmware_detail),
-            done = firmwareReady,
-            busy = firmwareProgress != null,
-            actionLabel = stringResource(R.string.setup_install),
-            onAction = onInstallFirmware
-        )
-
-        Spacer(Modifier.height(12.dp))
-
-        SetupStep(
-            index = 3,
-            icon = Icons.Outlined.Notifications,
-            title = stringResource(R.string.setup_notifications_title),
-            detail = stringResource(R.string.setup_notifications_detail),
-            optional = true,
-            done = notificationsGranted,
-            actionLabel = stringResource(R.string.setup_allow),
-            onAction = {
-                (context as? Activity)?.let { Permission.PostNotifications.requestPermission(it) }
-            }
-        )
-
-        Spacer(Modifier.height(28.dp))
-
-        val ready = storageGranted && firmwareReady
-
-        Box(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(14.dp))
-                .background(if (ready) SettingsStyle.AccentBlue else SettingsStyle.CardSurface)
-                .border(
-                    1.dp,
-                    if (ready) Color.Transparent else SettingsStyle.CardBorder,
-                    RoundedCornerShape(14.dp)
-                )
-                .clickable(enabled = ready, onClick = onFinish)
-                .padding(vertical = 14.dp),
-            contentAlignment = Alignment.Center
+                .fillMaxSize()
+                .windowInsetsPadding(WindowInsets.safeDrawing)
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 20.dp, vertical = 20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = stringResource(R.string.setup_next),
-                color = if (ready) Color.White else SettingsStyle.TextDim,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
-
-        if (onSkip != null) {
-            Spacer(Modifier.height(10.dp))
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
-                    .clickable(onClick = onSkip)
-                    .padding(vertical = 10.dp),
-                contentAlignment = Alignment.Center
-            ) {
+            Column(modifier = Modifier.widthIn(max = 520.dp).fillMaxWidth()) {
                 Text(
-                    text = stringResource(R.string.setup_skip),
-                    color = SettingsStyle.TextSecondary,
-                    fontSize = 13.sp
+                    text = stringResource(R.string.setup_welcome),
+                    color = SettingsStyle.TextPrimary,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
                 )
+                Spacer(Modifier.height(16.dp))
+
+                SetupStep(
+                    index = 1,
+                    icon = Icons.Outlined.Folder,
+                    title = stringResource(R.string.setup_storage_title),
+                    detail = stringResource(R.string.setup_storage_detail),
+                    done = storageGranted,
+                    actionLabel = stringResource(R.string.setup_allow),
+                    onAction = { requestStorageAccess(context) }
+                )
+
+                Spacer(Modifier.height(10.dp))
+
+                SetupStep(
+                    index = 2,
+                    icon = Icons.Outlined.SystemUpdate,
+                    title = stringResource(R.string.setup_firmware_title),
+                    detail = firmwareVersion?.let { stringResource(R.string.setup_firmware_installed, it) }
+                        ?: stringResource(R.string.setup_firmware_detail),
+                    done = firmwareReady,
+                    busy = firmwareProgress != null,
+                    actionLabel = stringResource(R.string.setup_install),
+                    onAction = onInstallFirmware
+                )
+
+                Spacer(Modifier.height(10.dp))
+
+                SetupStep(
+                    index = 3,
+                    icon = Icons.Outlined.Notifications,
+                    title = stringResource(R.string.setup_notifications_title),
+                    detail = stringResource(R.string.setup_notifications_detail),
+                    optional = true,
+                    done = notificationsGranted,
+                    actionLabel = stringResource(R.string.setup_allow),
+                    onAction = {
+                        (context as? Activity)?.let { Permission.PostNotifications.requestPermission(it) }
+                    }
+                )
+
+                Spacer(Modifier.height(16.dp))
+
+                val ready = storageGranted && firmwareReady
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(if (ready) SettingsStyle.AccentBlue else SettingsStyle.CardSurface)
+                        .border(
+                            1.dp,
+                            if (ready) Color.Transparent else SettingsStyle.CardBorder,
+                            RoundedCornerShape(14.dp)
+                        )
+                        .clickable(enabled = ready, onClick = onFinish)
+                        .padding(vertical = 14.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(R.string.setup_next),
+                        color = if (ready) SettingsStyle.BgDeep else SettingsStyle.TextDim,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+
+                if (onSkip != null) {
+                    Spacer(Modifier.height(10.dp))
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                            .clickable(onClick = onSkip)
+                            .padding(vertical = 10.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = stringResource(R.string.setup_skip),
+                            color = SettingsStyle.TextSecondary,
+                            fontSize = 13.sp
+                        )
+                    }
+                }
             }
         }
     }
@@ -238,18 +247,18 @@ private fun SetupStep(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
-            .background(SettingsStyle.CardSurface)
+            .background(SettingsStyle.CardSurface.copy(alpha = 0.96f))
             .border(
                 1.dp,
                 if (done) SettingsStyle.AccentBlue.copy(alpha = 0.5f) else SettingsStyle.CardBorder,
                 RoundedCornerShape(16.dp)
             )
-            .padding(16.dp),
+            .padding(12.dp),
         verticalAlignment = Alignment.Top
     ) {
         Box(
             modifier = Modifier
-                .size(38.dp)
+                .size(32.dp)
                 .clip(RoundedCornerShape(11.dp))
                 .background(SettingsStyle.InputSurface),
             contentAlignment = Alignment.Center
@@ -262,12 +271,13 @@ private fun SetupStep(
             )
         }
 
-        Spacer(Modifier.width(14.dp))
+        Spacer(Modifier.width(10.dp))
 
         Column(modifier = Modifier.weight(1f)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = stringResource(R.string.setup_step_title, index, title),
+                    modifier = Modifier.weight(1f),
                     color = SettingsStyle.TextPrimary,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold
@@ -289,25 +299,26 @@ private fun SetupStep(
             Text(text = detail, color = SettingsStyle.TextSecondary, fontSize = 12.sp)
         }
 
-        Spacer(Modifier.width(12.dp))
+        Spacer(Modifier.width(8.dp))
 
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(10.dp))
-                .background(if (done) Color.Transparent else SettingsStyle.InputSurface)
+                .background(if (done) Color.Transparent else SettingsStyle.AccentBlue)
                 .border(
                     1.dp,
-                    if (done) Color.Transparent else SettingsStyle.InputBorder,
+                    if (done) Color.Transparent else SettingsStyle.AccentBlue,
                     RoundedCornerShape(10.dp)
                 )
                 .clickable(enabled = !done && !busy, onClick = onAction)
-                .padding(horizontal = 14.dp, vertical = 8.dp),
+                .defaultMinSize(minHeight = 48.dp)
+                .padding(horizontal = 10.dp, vertical = 8.dp),
             contentAlignment = Alignment.Center
         ) {
             when {
                 busy -> CircularProgressIndicator(
                     modifier = Modifier.size(16.dp),
-                    color = SettingsStyle.AccentBlue,
+                    color = SettingsStyle.BgDeep,
                     strokeWidth = 2.dp
                 )
 
@@ -320,7 +331,7 @@ private fun SetupStep(
 
                 else -> Text(
                     text = actionLabel,
-                    color = SettingsStyle.TextPrimary,
+                    color = SettingsStyle.BgDeep,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -379,7 +390,7 @@ fun StorageAccessDialog(onGrant: () -> Unit, onDismiss: () -> Unit) {
                 ) {
                     Text(
                         stringResource(R.string.setup_storage_dialog_open_settings),
-                        color = Color.White,
+                        color = SettingsStyle.BgDeep,
                         fontSize = 13.sp
                     )
                 }

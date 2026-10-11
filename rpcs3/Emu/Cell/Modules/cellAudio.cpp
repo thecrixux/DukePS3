@@ -17,6 +17,7 @@
 #include "cellAudio.h"
 #include "util/video_provider.h"
 
+#include <algorithm>
 #include <cmath>
 
 LOG_CHANNEL(cellAudio);
@@ -896,29 +897,39 @@ void cell_audio_thread::operator()()
 	}
 
 	u32 untouched_expected = 0;
+	u32 untouched_below_streak = 0;
+	constexpr u32 untouched_lower_after = 8;
 
-	// A port the game feeds irregularly - the audio port of a movie that has just been started and whose
-	// decoder is still spinning up, typically - makes untouched oscillate. Without hysteresis the
-	// expectation follows it straight back down, so the next period re-arms the wait below and the thread
-	// stalls again, up to partially_untouched_timeout every time. Hold the expectation for a while instead:
-	// keeping it high only ever means "I already know that port is quiet, do not wait for it".
-	u64 untouched_hold_until = 0;
-
-	// Long enough to outlast the few-period oscillation a decoder produces while it spins up, short enough
-	// that a port going quiet for good is noticed promptly.
-	const u64 untouched_hold_periods = 340'000 / std::max<u32>(1, cfg.audio_block_period);
-
-	const auto expect_untouched = [&](u32 count)
+	// Lower the idle-port expectation after consecutive ready periods, rather than
+	// holding it for 340ms after every silent block. Otherwise intermittent late
+	// writes keep extending the hold and can be replaced with silence indefinitely.
+	// Adapted from the audio hysteresis in ARMSX3 and EmuCoreC. Polls while waiting
+	// must not count as ready periods; call this only when advancing a period.
+	const auto expect_untouched = [&](u32 count, u32 active_ports)
 	{
-		if (count >= untouched_expected)
+		untouched_expected = std::min(untouched_expected, active_ports);
+		count = std::min(count, active_ports);
+
+		if (count >= untouched_expected || ++untouched_below_streak >= untouched_lower_after)
 		{
 			untouched_expected = count;
-			untouched_hold_until = m_counter + untouched_hold_periods;
+			untouched_below_streak = 0;
 		}
-		else if (m_counter >= untouched_hold_until)
-		{
-			untouched_expected = count;
-		}
+	};
+
+	// Producer-side counters: output callbacks cannot distinguish real PCM from
+	// silence already inserted here. Report on this thread, never in the callback.
+	u64 mixed_blocks = 0, silence_no_ports = 0, silence_untouched = 0;
+	u64 skipped_untouched = 0, partial_mix = 0, incomplete_mix = 0;
+	u64 empty_mixes = 0, checked_mixes = 0, last_producer_report = 0;
+	const auto report_producer = [&]
+	{
+		cellAudio.notice("Audio producer: mixed=%llu silence_no_ports=%llu silence_untouched=%llu "
+			"skipped_untouched=%llu partial_mix=%llu incomplete_mix=%llu "
+			"empty_mixes=%llu checked_mixes=%llu expected=%u buffering=%d",
+			mixed_blocks, silence_no_ports, silence_untouched, skipped_untouched,
+			partial_mix, incomplete_mix, empty_mixes, checked_mixes,
+			untouched_expected, cfg.buffering_enabled);
 	};
 
 	u32 loop_count = 0;
@@ -942,6 +953,11 @@ void cell_audio_thread::operator()()
 
 		const bool emu_paused = Emu.IsPaused();
 		const u64 timestamp = ringbuffer->update(emu_paused || m_backend_failed);
+		if (!emu_paused && timestamp - last_producer_report >= 10'000'000)
+		{
+			last_producer_report = timestamp;
+			report_producer();
+		}
 
 		if (emu_paused)
 		{
@@ -981,6 +997,7 @@ void cell_audio_thread::operator()()
 				finish_port_volume_stepping();
 				m_average_playtime = static_cast<f32>(ringbuffer->get_enqueued_playtime());
 				untouched_expected = 0;
+				untouched_below_streak = 0;
 			}
 
 			m_audio_should_restart = false;
@@ -1040,6 +1057,10 @@ void cell_audio_thread::operator()()
 			const u32 in_progress  = std::get<1>(tag_info);
 			const u32 untouched    = std::get<2>(tag_info);
 			const u32 incomplete   = std::get<3>(tag_info);
+
+			// A closed port must not leave a stale expectation that bypasses waiting
+			// for a remaining active port. Do not advance the ready streak on polls.
+			untouched_expected = std::min(untouched_expected, active_ports);
 
 			// Ratio between the rolling average of the audio period, and the desired audio period
 			const f32 average_playtime_ratio = m_average_playtime / cfg.audio_buffer_length;
@@ -1106,8 +1127,10 @@ void cell_audio_thread::operator()()
 			{
 				// no need to mix, just enqueue silence and advance time
 				cellAudio.trace("enqueuing silence: no active ports, enqueued_buffers=%llu", enqueued_buffers);
+				silence_no_ports++;
 				ringbuffer->enqueue_silence();
 				untouched_expected = 0;
+				untouched_below_streak = 0;
 				advance(timestamp);
 				continue;
 			}
@@ -1125,12 +1148,13 @@ void cell_audio_thread::operator()()
 					(time_since_last_period > cfg.partially_untouched_timeout) || g_cfg.audio.disable_sampling_skip
 				   )
 				{
-					expect_untouched(untouched);
+					expect_untouched(untouched, active_ports);
 
 					if (untouched >= active_ports)
 					{
 						// There's no audio in any buffer, simply advance time and hope the game recovers
 						cellAudio.trace("advancing time: untouched=%u/%u (expected=%u), enqueued_buffers=%llu", untouched, active_ports, untouched_expected, enqueued_buffers);
+						skipped_untouched++;
 						advance(timestamp);
 						continue;
 					}
@@ -1140,6 +1164,7 @@ void cell_audio_thread::operator()()
 					// touched and untouched. Mix what is there instead: the untouched ports were memset, so
 					// they contribute silence, which is exactly what they hold.
 					cellAudio.trace("mixing partially untouched buffers: untouched=%u/%u, enqueued_buffers=%llu", untouched, active_ports, enqueued_buffers);
+					partial_mix++;
 					waited_long_enough = true;
 				}
 				else
@@ -1156,8 +1181,9 @@ void cell_audio_thread::operator()()
 			{
 				// There's no audio in the buffers, simply advance time
 				cellAudio.trace("enqueuing silence: untouched=%u/%u (expected=%u), enqueued_buffers=%llu", untouched, active_ports, untouched_expected, enqueued_buffers);
+				silence_untouched++;
 				ringbuffer->enqueue_silence();
-				expect_untouched(untouched);
+				expect_untouched(untouched, active_ports);
 				advance(timestamp);
 				continue;
 			}
@@ -1173,7 +1199,8 @@ void cell_audio_thread::operator()()
 			//cellAudio.error("active=%u, untouched=%u, in_progress=%d, incomplete=%d, enqueued_buffers=%u", active_ports, untouched, in_progress, incomplete, enqueued_buffers);
 
 			// Store number of untouched buffers for future reference
-			expect_untouched(untouched);
+			expect_untouched(untouched, active_ports);
+			if (incomplete > 0) incomplete_mix++;
 
 			// Log if we enqueued untouched/incomplete buffers
 			if (untouched > 0 || incomplete > 0)
@@ -1236,12 +1263,27 @@ void cell_audio_thread::operator()()
 			fmt::throw_exception("Unsupported channel count in cell_audio_config: %d", cfg.audio_channels);
 		}
 
+		mixed_blocks++;
+		if (cfg.raw.dump_to_file)
+		{
+			// Only inspect PCM during a diagnostic capture. A naturally silent mix
+			// also counts; this is evidence about its origin, not an error counter.
+			checked_mixes++;
+			if (std::all_of(buf, buf + cfg.audio_channels * AUDIO_BUFFER_SAMPLES,
+				[](float sample) { return sample == 0.0f; }))
+			{
+				empty_mixes++;
+			}
+		}
+
 		// Enqueue
 		ringbuffer->enqueue();
 
 		// Advance time
 		advance(timestamp);
 	}
+
+	report_producer();
 
 	// Destroy ringbuffer
 	ringbuffer.reset();

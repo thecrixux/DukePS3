@@ -66,7 +66,7 @@ import net.rpcs3.ui.theme.SettingsStyle
 @Composable
 fun rpcsSwitchColors(): SwitchColors =
     SwitchDefaults.colors(
-        checkedThumbColor = Color.White,
+        checkedThumbColor = Rpcs.OnAccent,
         checkedTrackColor = SettingsStyle.AccentBlue,
         checkedBorderColor = Color.Transparent,
         uncheckedThumbColor = SettingsStyle.TextSecondary,
@@ -215,7 +215,7 @@ fun SettingCheckbox(
             colors = CheckboxDefaults.colors(
                 checkedColor = SettingsStyle.AccentBlue,
                 uncheckedColor = SettingsStyle.CheckBorder,
-                checkmarkColor = Color.White
+                checkmarkColor = Rpcs.OnAccent
             )
         )
         Spacer(Modifier.width(10.dp))

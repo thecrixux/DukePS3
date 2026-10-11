@@ -1,6 +1,27 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.RPCS3" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Theme.DukePS3" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:windowLayoutInDisplayCutoutMode">always</item>
+        <item name="colorPrimary">@color/duke_gold</item>
+        <item name="colorOnPrimary">@color/duke_background</item>
+        <item name="colorPrimaryContainer">@color/duke_selection</item>
+        <item name="colorOnPrimaryContainer">@color/duke_gold</item>
+        <item name="colorSecondary">@color/duke_gold</item>
+        <item name="colorOnSecondary">@color/duke_background</item>
+        <item name="colorSecondaryContainer">@color/duke_selection</item>
+        <item name="colorOnSecondaryContainer">@color/duke_gold</item>
+        <item name="android:colorAccent">@color/duke_gold</item>
+        <item name="android:windowBackground">@color/duke_background</item>
+        <item name="android:colorBackground">@color/duke_background</item>
+        <item name="colorOnBackground">@color/duke_text_primary</item>
+        <item name="android:textColorPrimary">@color/duke_text_primary</item>
+        <item name="android:textColorSecondary">@color/duke_text_secondary</item>
+        <item name="colorSurface">@color/duke_surface</item>
+        <item name="colorOnSurface">@color/duke_text_primary</item>
+        <item name="colorOnSurfaceVariant">@color/duke_text_secondary</item>
+        <item name="android:statusBarColor">@color/duke_background</item>
+        <item name="android:navigationBarColor">@color/duke_background</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
     </style>
 </resources>

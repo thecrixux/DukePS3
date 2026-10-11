@@ -11,6 +11,9 @@
 
 #include "vkutils/scratch.h"
 #include "vkutils/device.h"
+#ifdef ANDROID
+#include "VKDiagnostics.h"
+#endif
 #include <unordered_map>
 
 namespace vk
@@ -54,6 +57,9 @@ namespace vk
 
 	void destroy_global_resources()
 	{
+#ifdef ANDROID
+		g_renderer_diagnostics.reset();
+#endif
 		VkDevice dev = *g_render_device;
 		vk::clear_renderpass_cache(dev);
 		vk::clear_framebuffer_cache();
@@ -101,6 +107,17 @@ namespace vk
 
 		g_driver_vendor = gpu.get_driver_vendor();
 		g_chip_class = gpu.get_chip_class();
+
+#ifdef ANDROID
+		g_renderer_diagnostics.set_device({
+			.available = true,
+			.gpu_name = gpu_name,
+			.driver_name = gpu.get_driver_name(),
+			.driver_version = gpu.get_driver_version(),
+			.vulkan_version = gpu.get_driver_vk_version(),
+			.driver_vendor_id = static_cast<u32>(g_driver_vendor)
+		});
+#endif
 
 		switch (g_driver_vendor)
 		{

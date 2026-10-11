@@ -305,14 +305,19 @@ class HudView @JvmOverloads constructor(
             "0"
         }
 
-        if (sample.outputFps <= 0f) {
+        if (!sample.frameGenerationEnabled) {
             return rendered
         }
 
         val builder = android.text.SpannableStringBuilder()
         append(builder, rendered, COLOR_FPS)
         append(builder, " → ", COLOR_SEPARATOR)
-        append(builder, String.format(java.util.Locale.US, "%.0f", sample.outputFps), COLOR_FPS_GENERATED)
+        val output = if (sample.outputFps.isFinite()) {
+            String.format(java.util.Locale.US, "OUT %.0f", sample.outputFps)
+        } else {
+            "OUT —"
+        }
+        append(builder, output, COLOR_FPS_GENERATED)
         return builder
     }
 

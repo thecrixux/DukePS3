@@ -265,7 +265,7 @@ private fun PackageRow(
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = null,
-                    tint = Color.White,
+                    tint = SettingsStyle.BgDeep,
                     modifier = Modifier.size(14.dp)
                 )
             }

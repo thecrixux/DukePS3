@@ -369,7 +369,7 @@ class RPCS3Activity : ComponentActivity() {
 
     private fun applyFrameGenDisplayMode() {
         val active = display?.mode
-        val enabled = FrameGenPrefs.isEnabled(FrameGenPrefs.of(this)) && FrameGen.state.value.imported
+        val enabled = FrameGenPrefs.isEnabled(FrameGenPrefs.of(this)) && FrameGen.state.value.usable
 
         val wanted = if (active == null || !enabled) {
             0
@@ -433,9 +433,7 @@ class RPCS3Activity : ComponentActivity() {
 
         val reader = DeviceStatsReader(this)
 
-        var lastPresented = -1L
-        var lastGenerated = 0L
-        var lastSampleAt = 0L
+        val outputMeter = net.rpcs3.ui.hud.OutputFrameMeter()
 
         hudPump = object : Runnable {
             override fun run() {
@@ -443,23 +441,17 @@ class RPCS3Activity : ComponentActivity() {
                 val emu = runCatching { JSONObject(RPCS3.instance.perfMetrics()) }.getOrNull()
 
                 val presented = emu?.optLong("presented", 0L) ?: 0L
-                val generated = emu?.optLong("generated", 0L) ?: 0L
                 val now = android.os.SystemClock.elapsedRealtime()
-
-                val outputFps = if (lastPresented >= 0 && now > lastSampleAt && generated > lastGenerated) {
-                    (presented - lastPresented) * 1000f / (now - lastSampleAt)
-                } else {
-                    0f
-                }
-
-                lastPresented = presented
-                lastGenerated = generated
-                lastSampleAt = now
+                val frameGenEnabled = emu?.optBoolean("frameGenEnabled", false) ?: false
+                val outputFps = outputMeter.sample(
+                    now, presented, frameGenEnabled && emu != null
+                )
 
                 binding.hudView.submit(
                     device.copy(
                         fps = emu?.optDouble("fps", 0.0)?.toFloat() ?: 0f,
                         outputFps = outputFps,
+                        frameGenerationEnabled = frameGenEnabled,
                         frametimeMs = emu?.optDouble("frametime", 0.0)?.toFloat() ?: 0f,
                         renderer = emu?.optString("renderer").orEmpty(),
                         rsxPercent = emu?.optInt("rsxLoad", -1) ?: -1

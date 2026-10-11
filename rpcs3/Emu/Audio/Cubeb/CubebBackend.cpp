@@ -4,6 +4,10 @@
 #include <cstdarg>
 #include "util/logs.hpp"
 #include "Emu/Audio/audio_device_enumerator.h"
+#ifdef __ANDROID__
+#include "Emu/system_config.h"
+#include "Emu/Audio/AndroidAudioDiagnostics.h"
+#endif
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -23,8 +27,21 @@ CubebBackend::CubebBackend()
 	}
 #endif
 
+	const char* preferred_backend = nullptr;
+#ifdef __ANDROID__
+	const std::string preference = g_cfg.audio.android_backend.to_string();
+	if (preference == "aaudio" || preference == "opensl")
+		preferred_backend = preference.c_str();
+	// Cubeb can fall back when the preferred backend is unavailable.
+	android_audio::g_diagnostics.set_backend(preference, nullptr);
+	const auto compiled_backends = cubeb_get_backend_names();
+	for (std::size_t i = 0; i < compiled_backends.count; ++i)
+		Cubeb.notice("Compiled audio backend: %s", compiled_backends.names[i]);
+#endif
+	// Include initialization failures of the preferred output in the log.
+	cubeb_set_log_callback(CUBEB_LOG_NORMAL, log_cb);
 	cubeb *ctx{};
-	if (int err = cubeb_init(&ctx, "RPCS3", nullptr))
+	if (int err = cubeb_init(&ctx, "RPCS3", preferred_backend))
 	{
 		Cubeb.error("cubeb_init() failed: %i", err);
 		return;
@@ -39,9 +56,13 @@ CubebBackend::CubebBackend()
 		m_dev_collection_cb_enabled = true;
 	}
 
-	cubeb_set_log_callback(CUBEB_LOG_NORMAL, log_cb);
-
 	Cubeb.notice("Using backend %s", cubeb_get_backend_id(ctx));
+#ifdef __ANDROID__
+	android_audio::g_diagnostics.set_backend(preference, cubeb_get_backend_id(ctx));
+	Cubeb.notice("Android audio preference: %s; actual backend: %s", preference, cubeb_get_backend_id(ctx));
+	if (preferred_backend && preference != cubeb_get_backend_id(ctx))
+		Cubeb.warning("Preferred Android audio backend %s was unavailable; using %s", preference, cubeb_get_backend_id(ctx));
+#endif
 
 	std::lock_guard cb_lock{m_state_cb_mutex};
 	m_ctx = ctx;
@@ -178,6 +199,10 @@ bool CubebBackend::Open(std::string_view dev_id, AudioFreq freq, AudioSampleSize
 		return false;
 	}
 
+#ifdef __ANDROID__
+	android_audio::g_diagnostics.opened(stream_param.rate, stream_param.channels,
+		get_sample_size(), stream_latency);
+#endif
 	if (int err = cubeb_stream_start(m_stream))
 	{
 		Cubeb.error("cubeb_stream_start() failed: %i", err);
@@ -195,6 +220,9 @@ bool CubebBackend::Open(std::string_view dev_id, AudioFreq freq, AudioSampleSize
 
 void CubebBackend::Close()
 {
+#ifdef __ANDROID__
+	android_audio::g_diagnostics.closed();
+#endif
 	if (m_stream != nullptr)
 	{
 		if (int err = cubeb_stream_stop(m_stream))
@@ -228,6 +256,9 @@ void CubebBackend::Play()
 
 	std::lock_guard lock(m_cb_mutex);
 	m_playing = true;
+#ifdef __ANDROID__
+	android_audio::g_diagnostics.set_playing(true);
+#endif
 }
 
 void CubebBackend::Pause()
@@ -242,6 +273,9 @@ void CubebBackend::Pause()
 
 	std::lock_guard lock(m_cb_mutex);
 	m_playing = false;
+#ifdef __ANDROID__
+	android_audio::g_diagnostics.set_playing(false);
+#endif
 	m_last_sample.fill(0);
 }
 
@@ -376,7 +410,9 @@ long CubebBackend::data_cb(cubeb_stream* stream, void* user_ptr, void const* /* 
 
 	std::unique_lock lock(cubeb->m_cb_mutex, std::defer_lock);
 
-	if (!cubeb->m_reset_req.observe() && lock.try_lock_for(std::chrono::microseconds{50}) && cubeb->m_write_callback && cubeb->m_playing)
+	const bool resetting = cubeb->m_reset_req.observe();
+	const bool lock_acquired = !resetting && lock.try_lock_for(std::chrono::microseconds{50});
+	if (lock_acquired && cubeb->m_write_callback && cubeb->m_playing)
 	{
 		if (stream != cubeb->m_stream)
 		{
@@ -388,6 +424,9 @@ long CubebBackend::data_cb(cubeb_stream* stream, void* user_ptr, void const* /* 
 		const u32 bytes_req = nframes * sample_size;
 		u32 written = std::min(cubeb->m_write_callback(bytes_req, output_buffer), bytes_req);
 		written -= written % sample_size;
+#ifdef __ANDROID__
+		android_audio::g_diagnostics.delivered(nframes, written / sample_size);
+#endif
 
 		if (written >= sample_size)
 		{
@@ -404,6 +443,9 @@ long CubebBackend::data_cb(cubeb_stream* stream, void* user_ptr, void const* /* 
 		// Stream parameters are modified only after stream_destroy. stream_destroy will return
 		// only after this callback returns, so it's safe to access full_sample_size here.
 		memset(output_buffer, 0, nframes * cubeb->full_sample_size);
+#ifdef __ANDROID__
+		android_audio::g_diagnostics.silence(resetting, lock_acquired);
+#endif
 	}
 
 	return nframes;

@@ -58,6 +58,8 @@
 #include <span>
 #include <optional>
 #include <charconv>
+#include <chrono>
+#include <unordered_set>
 
 #include "util/asm.hpp"
 #include "util/vm.hpp"
@@ -4183,17 +4185,25 @@ extern void ppu_precompile(std::vector<std::string>& dir_queue, std::vector<ppu_
 	}
 
 	std::optional<scoped_progress_dialog> progress_dialog(std::in_place, get_localized_string(localized_string_id::PROGRESS_DIALOG_SCANNING_PPU_EXECUTABLE));
+	const auto scan_started = std::chrono::steady_clock::now();
 
 	// Make sure we only have one '/' at the end and remove duplicates.
+	std::erase_if(dir_queue, [](const std::string& dir) { return dir.empty(); });
 	for (std::string& dir : dir_queue)
 	{
-		while (dir.back() == '/' || dir.back() == '\\')
+		while (dir.size() > 1 && (dir.back() == '/' || dir.back() == '\\'))
 			dir.pop_back();
-		dir += '/';
+		if (dir.back() != '/') dir += '/';
 	}
 
 	std::sort(dir_queue.begin(), dir_queue.end());
 	dir_queue.erase(std::unique(dir_queue.begin(), dir_queue.end()), dir_queue.end());
+
+	// Callers may provide both a parent and one of its descendants. Remember
+	// queued directories before descending so each executable is considered once.
+	std::unordered_set<std::string> queued_directories(dir_queue.begin(), dir_queue.end());
+	const u32 scan_roots = ::size32(dir_queue);
+	u64 duplicate_directories = 0;
 
 	const std::string firmware_sprx_path = vfs::get("/dev_flash/sys/external/");
 
@@ -4239,7 +4249,15 @@ extern void ppu_precompile(std::vector<std::string>& dir_queue, std::vector<ppu_
 			{
 				if (entry.name != "." && entry.name != "..")
 				{
-					dir_queue.emplace_back(dir_queue[i] + entry.name + '/');
+					std::string child = dir_queue[i] + entry.name + '/';
+					if (queued_directories.emplace(child).second)
+					{
+						dir_queue.emplace_back(std::move(child));
+					}
+					else
+					{
+						duplicate_directories++;
+					}
 				}
 
 				continue;
@@ -4371,6 +4389,10 @@ extern void ppu_precompile(std::vector<std::string>& dir_queue, std::vector<ppu_
 			}
 		}
 	}
+
+	ppu_log.notice("PPU precompile scan: roots=%u directories=%u duplicates_avoided=%llu candidates=%u elapsed=%llu ms",
+		scan_roots, ::size32(dir_queue), duplicate_directories, ::size32(file_queue),
+		static_cast<u64>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - scan_started).count()));
 
 	g_progr_ftotal += ::size32(file_queue);
 
@@ -4945,9 +4967,12 @@ bool ppu_initialize(const ppu_module<lv2_obj>& info, bool check_only, u64 file_s
 
 	struct log_guard
 	{
+		const std::chrono::steady_clock::time_point started = std::chrono::steady_clock::now();
+
 		~log_guard() noexcept
 		{
-			ppu_log.notice("Leaving ppu_initialize(const ppu_module&..)");
+			ppu_log.notice("Leaving ppu_initialize(const ppu_module&..) elapsed=%llu ms",
+				static_cast<u64>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - started).count()));
 		}
 	} _log_guard;
 
@@ -5722,7 +5747,15 @@ bool ppu_initialize(const ppu_module<lv2_obj>& info, bool check_only, u64 file_s
 
 		*progress_dialog = get_localized_string(localized_string_id::PROGRESS_DIALOG_COMPILING_PPU_MODULES);
 
-		const u32 thread_count = std::max<u32>(std::min<u32>(::size32(workload), rpcs3::utils::get_max_threads()), 1) - 1;
+		// Do not spawn workers that can only block on the existing RAM-limited
+		// semaphore. The current thread also participates in the same work queue.
+		const u32 worker_limit = std::min<u32>(rpcs3::utils::get_max_threads(),
+			std::max<s16>(g_fxo->get<jit_core_allocator>().thread_count, 1));
+		const u32 thread_count = std::max<u32>(std::min<u32>(::size32(workload), worker_limit), 1) - 1;
+
+		ppu_log.notice("PPU compile workers: jobs=%u workers=%u memory_limit=%u available=%llu MiB",
+			::size32(workload), thread_count + 1, g_fxo->get<jit_core_allocator>().thread_count,
+			utils::get_avail_memory() / (1024 * 1024));
 
 		struct thread_index_allocator
 		{
@@ -5788,6 +5821,7 @@ bool ppu_initialize(const ppu_module<lv2_obj>& info, bool check_only, u64 file_s
 
 					// Keep allocating workload
 					const auto& [obj_name, part] = std::as_const(workload)[i];
+					const auto compile_started = std::chrono::steady_clock::now();
 
 					ppu_log.warning("LLVM: Compiling module %s%s", cache_path, obj_name);
 
@@ -5835,7 +5869,8 @@ bool ppu_initialize(const ppu_module<lv2_obj>& info, bool check_only, u64 file_s
 						ppu_initialize2(jit2, part, cache_path, obj_name);
 					}
 
-					ppu_log.success("LLVM: Compiled module %s", obj_name);
+					ppu_log.success("LLVM: Compiled module %s elapsed=%llu ms", obj_name,
+						static_cast<u64>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - compile_started).count()));
 				}
 
 				core_lock.unlock();
@@ -6104,6 +6139,7 @@ static void ppu_initialize2(jit_compiler& jit, const ppu_module<lv2_obj>& module
 {
 #ifdef LLVM_AVAILABLE
 	using namespace llvm;
+	const auto translate_started = std::chrono::steady_clock::now();
 
 	// Create LLVM module
 	std::unique_ptr<Module> _module = std::make_unique<Module>(obj_name, jit.get_context());
@@ -6269,6 +6305,12 @@ static void ppu_initialize2(jit_compiler& jit, const ppu_module<lv2_obj>& module
 	}
 
 	// Load or compile module
+	const auto codegen_started = std::chrono::steady_clock::now();
 	jit.add(std::move(_module), cache_path);
+	const auto codegen_finished = std::chrono::steady_clock::now();
+	ppu_log.notice("PPU compile timing: module=%s translate=%llu ms codegen=%llu ms",
+		obj_name,
+		static_cast<u64>(std::chrono::duration_cast<std::chrono::milliseconds>(codegen_started - translate_started).count()),
+		static_cast<u64>(std::chrono::duration_cast<std::chrono::milliseconds>(codegen_finished - codegen_started).count()));
 #endif // LLVM_AVAILABLE
 }

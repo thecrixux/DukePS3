@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="audio_capture_export">Exportar captura de audio</string>
+    <string name="audio_capture_description">Graba con Audio → Dump to file, detén el juego y guarda el último WAV y el registro actual en un ZIP.</string>
+    <string name="audio_capture_not_found">No hay ninguna captura de audio. Activa Audio → Dump to file, ejecuta el juego y detenlo normalmente.</string>
+    <string name="audio_capture_unfinished">El último WAV está vacío o sin finalizar. Detén el juego normalmente después de grabar y vuelve a intentarlo.</string>
+    <string name="audio_capture_stop_game">Detén el juego normalmente antes de exportar la captura de audio.</string>
+    <string name="audio_capture_busy">Preparando captura de audio…</string>
+    <string name="audio_capture_saved">ZIP guardado con %1$s. También incluye el registro actual si está disponible.</string>
+    <string name="audio_capture_error">No se pudo exportar el audio: %1$s</string>
+</resources>

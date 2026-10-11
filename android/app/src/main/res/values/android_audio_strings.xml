@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="android_audio_backend">Android audio output</string>
+    <string name="android_audio_backend_auto">Automatic (current behavior)</string>
+    <string name="android_audio_backend_hint">Stop the game before changing this preference, then restart it. If unavailable, another output may be used. The actual output is saved in performance captures.</string>
+</resources>

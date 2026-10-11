@@ -12,11 +12,11 @@ android {
     ndkVersion = "29.0.14206865"
 
     defaultConfig {
-        applicationId = "com.ps3native.standard"
+        applicationId = "com.crixux.dukeps3"
         minSdk = 31
         targetSdk = 35
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         ndk {
@@ -80,19 +80,19 @@ android {
     productFlavors {
         create("standard") {
             dimension = "branding"
-            applicationId = "com.ps3native.standard"
+            applicationId = "com.crixux.dukeps3"
         }
         create("antutu") {
             dimension = "branding"
-            applicationId = "com.antutu.ABenchMark"
+            applicationId = "com.crixux.dukeps3"
         }
         create("ludashi") {
             dimension = "branding"
-            applicationId = "com.ludashi.benchmark"
+            applicationId = "com.crixux.dukeps3"
         }
         create("pubg") {
             dimension = "branding"
-            applicationId = "com.tencent.ig"
+            applicationId = "com.crixux.dukeps3"
         }
     }
 
@@ -155,7 +155,7 @@ android {
     }
 }
 
-base.archivesName = "ps3native"
+base.archivesName = "dukeps3"
 
 dependencies {
     implementation(libs.androidx.navigation.compose)

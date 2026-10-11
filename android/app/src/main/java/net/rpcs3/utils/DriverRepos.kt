@@ -148,7 +148,7 @@ object DriverRepos {
             connectTimeout = 15000
             readTimeout = 15000
             setRequestProperty("Accept", "application/vnd.github+json")
-            setRequestProperty("User-Agent", "PS3Native")
+            setRequestProperty("User-Agent", "DukePS3")
             instanceFollowRedirects = true
         }
 

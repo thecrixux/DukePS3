@@ -1,5 +1,8 @@
 #include "stdafx.h"
 #include "VKGSRender.h"
+#ifdef ANDROID
+#include "VKDiagnostics.h"
+#endif
 #include "vkutils/buffer_object.h"
 #include "vkutils/memory.h"
 #include "Emu/RSX/Overlays/overlay_manager.h"
@@ -40,7 +43,8 @@ u32 VKGSRender::available_frame_contexts()
 
 #ifdef ANDROID
 	m_requested_swap_reserve = vk::frame_generation_reserved_images();
-	m_reserved_swap_images = (total > 3) ? std::min(m_requested_swap_reserve, total - 3) : 0;
+	m_reserved_swap_images = (m_swapchain->supports_frame_generation() && total > 3)
+		? std::min(m_requested_swap_reserve, total - 3) : 0;
 	return total - m_reserved_swap_images;
 #else
 	return total;
@@ -62,8 +66,12 @@ void VKGSRender::run_frame_generation(VkImage target_image, VkImageLayout target
 
 	const auto settings = vk::get_frame_generation_settings();
 
-	if (!settings.enabled || !m_reserved_swap_images)
+	if (!settings.enabled || !m_swapchain->supports_frame_generation() || !m_reserved_swap_images)
 	{
+		vk::set_frame_generation_status({
+			.ready = false,
+			.unsupported = settings.enabled && !m_swapchain->supports_frame_generation(),
+			.width = m_swapchain_dims.width, .height = m_swapchain_dims.height });
 		if (m_frame_generator)
 		{
 			m_frame_generator->reset();
@@ -121,7 +129,6 @@ void VKGSRender::run_frame_generation(VkImage target_image, VkImageLayout target
 			m_swapchain->get_image(m_generated_present_images[i]), present_layout, width, height);
 	}
 
-	vk::frame_generation_count_generated(::size32(m_generated_present_images));
 }
 
 void VKGSRender::present_generated_frames()
@@ -133,6 +140,7 @@ void VKGSRender::present_generated_frames()
 		if (status == VK_SUCCESS || status == VK_SUBOPTIMAL_KHR)
 		{
 			vk::frame_generation_count_presented(1);
+			vk::frame_generation_count_generated(1);
 			continue;
 		}
 
@@ -829,6 +837,14 @@ void VKGSRender::flip(const rsx::display_flip_info_t& info)
 
 	// Confirm that the driver did not silently fail
 	ensure(m_current_frame->present_image != umax);
+
+#ifdef ANDROID
+	// Snapshot dimensions before scaling to the Android surface. No device
+	// pointers escape the RSX thread, and this also runs with DIS disabled.
+	vk::g_renderer_diagnostics.set_present(guest_width, guest_height, buffer_pitch,
+		buffer_width, buffer_height, m_swapchain_dims.width, m_swapchain_dims.height,
+		image_to_flip != nullptr);
+#endif
 
 	// Calculate output dimensions. Done after swapchain acquisition in case it was recreated.
 	areai aspect_ratio;

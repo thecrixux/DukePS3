@@ -4,26 +4,28 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 object Rpcs {
-    val Background = Color(0xFF0F0F18)
-    val Surface = Color(0xFF16161F)
-    val SurfaceRaised = Color(0xFF1C1C2A)
-    val SurfaceInset = Color(0xFF12121B)
-    val Outline = Color(0xFF2A2A3A)
-    val OutlineSoft = Color(0xFF20202E)
+    val Background = Color(0xFF101012)
+    val Surface = Color(0xFF151517)
+    val SurfaceRaised = Color(0xFF18181B)
+    val SurfaceInset = Color(0xFF101012)
+    val Outline = Color(0xFF303034)
+    val OutlineSoft = Color(0xFF242428)
 
-    val Accent = Color(0xFF1A9FFF)
-    val AccentBright = Color(0xFF4FC3F7)
+    val Accent = Color(0xFFFFB800)
+    val AccentBright = Color(0xFFFFC21A)
+    val AccentSecondary = Color(0xFFFF8A00)
+    val OnAccent = Background
 
-    val TextPrimary = Color(0xFFF0F4FF)
-    val TextSecondary = Color(0xFF93A6BC)
-    val TextDim = Color(0xFF6E7681)
+    val TextPrimary = Color(0xFFF2F2F2)
+    val TextSecondary = Color(0xFF9A9AA2)
+    val TextDim = Color(0xFF73737C)
 
     val Danger = Color(0xFFFF6B6B)
     val Warning = Color(0xFFFFB74D)
     val Success = Color(0xFF4CC38A)
 
-    val GradientCyan = Color(0xFF00B4D8)
-    val GradientViolet = Color(0xFF7B2FF7)
+    val GradientCyan = Color(0xFFFFC21A)
+    val GradientViolet = Color(0xFFFF8A00)
 
     val SelectionFill = Accent.copy(alpha = 0.14f)
     val SelectionBorder = Accent.copy(alpha = 0.55f)
@@ -68,7 +70,7 @@ object SettingsStyle {
     val ChipBorder = Rpcs.Outline
     val DangerRed = Rpcs.Danger
     val WarningAmber = Rpcs.Warning
-    val NavHighlight = Rpcs.AccentBright
+    val NavHighlight = Rpcs.Accent
 
     val CardCorner = Dims.CardCorner
     val InputCorner = Dims.InputCorner
@@ -83,7 +85,7 @@ object DrawerStyle {
     const val PressedAlpha = 0.94f
 
     val Accent = Rpcs.Accent
-    val ActiveAccent = Rpcs.AccentBright
+    val ActiveAccent = Rpcs.Accent
     val FocusFill = Rpcs.SelectionFill
     val TextPrimary = Rpcs.TextPrimary
     val TextSecondary = Rpcs.TextSecondary

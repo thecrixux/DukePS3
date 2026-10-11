@@ -288,7 +288,7 @@ private fun TabCell(label: String, selected: Boolean, width: Dp, onClick: () -> 
             }
             .clip(RoundedCornerShape(14.dp))
             .background(
-                if (selected) SettingsStyle.AccentBlue.copy(alpha = 0.16f) else Color.Transparent
+                if (selected) SettingsStyle.AccentBlue.copy(alpha = 0.14f) else Color.Transparent
             )
             .clickable(interactionSource = interaction, indication = null, onClick = onClick),
         contentAlignment = Alignment.Center

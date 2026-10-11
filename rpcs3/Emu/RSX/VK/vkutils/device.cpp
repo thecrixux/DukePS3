@@ -676,6 +676,11 @@ namespace vk
 		enabled_features.textureCompressionBC = pgpu->features.textureCompressionBC;
 		enabled_features.shaderStorageBufferArrayDynamicIndexing = VK_TRUE;
 
+#ifdef ANDROID
+		// Optional compute formats used by frame-generation engines.
+		enabled_features.shaderStorageImageExtendedFormats = pgpu->features.shaderStorageImageExtendedFormats;
+#endif
+
 		// Optionally disable unsupported stuff
 		if (!pgpu->features.fullDrawIndexUint32)
 		{

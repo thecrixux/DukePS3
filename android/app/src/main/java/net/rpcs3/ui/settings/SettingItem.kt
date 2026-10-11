@@ -76,6 +76,26 @@ fun SettingItem(
 ) {
     val context = LocalContext.current
 
+    if (path.trimStart('@') == "Video@@Resolution" && item.optString("type") == "enum") {
+        VideoOutputSetting(item, path, titleId, modifier) { next ->
+            commit(context, path, next, titleId, context.getString(R.string.video_output_mode))
+        }
+        return
+    }
+    if (path.trimStart('@') == "Video@@Resolution Scale" && item.optString("type") in listOf("uint", "int")) {
+        ResolutionScaleSetting(item, path, titleId, modifier) { next ->
+            commit(context, path, next, titleId, context.getString(R.string.render_scale))
+        }
+        return
+    }
+
+    if (isAndroidAudioBackendSetting(path) && item.optString("type") == "string") {
+        AndroidAudioBackendSetting(item, path, titleId, modifier) { next ->
+            commit(context, path, next, titleId, context.getString(R.string.android_audio_backend))
+        }
+        return
+    }
+
     when (item.optString("type", "")) {
         "bool" -> {
             var value by remember(path) { mutableStateOf(item.optBoolean("value")) }

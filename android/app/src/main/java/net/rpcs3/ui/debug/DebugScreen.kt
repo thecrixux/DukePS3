@@ -206,6 +206,9 @@ fun DebugScreen(
 
             Spacer(Modifier.height(Dims.RowSpacing))
 
+            AudioCaptureExportRow(Modifier.fillMaxWidth())
+            Spacer(Modifier.height(Dims.RowSpacing))
+
             val shareLog: () -> Unit = {
                 val file = DocumentFile.fromSingleUri(
                     context,

@@ -44,6 +44,9 @@ namespace vk
 		u32 m_width = 0;
 		u32 m_height = 0;
 		VkFormat m_surface_format = VK_FORMAT_B8G8R8A8_UNORM;
+#ifdef ANDROID
+		bool m_transfer_source_enabled = false;
+#endif
 
 		virtual void init_swapchain_images(render_device& dev, u32 count) = 0;
 
@@ -84,6 +87,13 @@ namespace vk
 		{
 			return m_surface_format;
 		}
+
+#ifdef ANDROID
+		bool supports_frame_generation() const
+		{
+			return m_transfer_source_enabled;
+		}
+#endif
 
 		bool is_headless() const
 		{

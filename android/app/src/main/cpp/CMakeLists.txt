@@ -66,7 +66,9 @@ set(BUILD_LLVM off)
 set(STATIC_LINK_LLVM on)
 set(DISABLE_LTO on)
 set(USE_LTO off)
-set(USE_OPENSL off)
+# Build both Android outputs so the audio backend preference can be tested.
+# A normal variable also overrides an older OFF entry in the CMake cache.
+set(USE_OPENSL on)
 set(ASMJIT_NO_SHM_OPEN on)
 set(USE_SYSTEM_ZLIB off)
 set(USE_LIBEVDEV off)

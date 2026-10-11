@@ -17,7 +17,7 @@ import javax.net.ssl.SSLSocketFactory
 import javax.net.ssl.X509TrustManager
 
 private const val TAG = "UpdateFinder"
-private const val USER_AGENT = "PS3Native"
+private const val USER_AGENT = "DukePS3"
 private const val INDEX_TTL_MS = 6L * 60L * 60L * 1000L
 
 private val SONY_HOST_SUFFIXES = listOf(

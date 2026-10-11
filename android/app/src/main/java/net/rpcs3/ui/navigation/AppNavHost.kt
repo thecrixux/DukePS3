@@ -13,6 +13,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -65,6 +71,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -370,6 +379,9 @@ fun GamesDestination(
     }
 
     val showSetup = setupActive == true
+    val appVersion = remember(context) {
+        context.packageManager.getPackageInfo(context.packageName, 0).versionName.orEmpty()
+    }
 
     val bootIsoLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
@@ -451,183 +463,208 @@ fun GamesDestination(
         gesturesEnabled = drawerState.isOpen,
         drawerContent = {
             ModalDrawerSheet(windowInsets = WindowInsets.safeDrawing) {
-                Column(
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .verticalScroll(
-                            rememberScrollState()
+                BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+                    val drawerHeight = maxHeight
+                    Column(
+                        modifier = Modifier
+                            .verticalScroll(rememberScrollState())
+                            .heightIn(min = drawerHeight)
+                            .padding(horizontal = 16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Spacer(Modifier.height(12.dp))
+
+                        NavigationDrawerItem(
+                            label = {
+                                Text(
+                                    stringResource(
+                                        R.string.drawer_firmware,
+                                        FirmwareRepository.version.value
+                                            ?: stringResource(R.string.drawer_firmware_none)
+                                    )
+                                )
+                            },
+                            selected = false,
+                            icon = { Icon(Icons.Outlined.Build, contentDescription = null) },
+                            badge = {
+                                val progressChannel = FirmwareRepository.progressChannel
+                                val progress = ProgressRepository.getItem(progressChannel.value)
+                                val progressValue = progress?.value?.value
+                                val maxValue = progress?.value?.max
+                                if (progressValue != null && maxValue != null) {
+                                    if (maxValue.longValue != 0L) {
+                                        CircularProgressIndicator(
+                                            modifier = Modifier
+                                                .width(32.dp)
+                                                .height(32.dp),
+                                            color = MaterialTheme.colorScheme.secondary,
+                                            trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                                            progress = {
+                                                progressValue.longValue.toFloat() / maxValue.longValue.toFloat()
+                                            },
+                                        )
+                                    } else {
+                                        CircularProgressIndicator(
+                                            modifier = Modifier
+                                                .width(32.dp)
+                                                .height(32.dp),
+                                            color = MaterialTheme.colorScheme.secondary,
+                                            trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                                        )
+                                    }
+                                }
+                            },
+                            onClick = {
+                                if (FirmwareRepository.progressChannel.value == null) {
+                                    installFwLauncher.launch("*/*")
+                                }
+                            }
                         )
-                ) {
-                    Spacer(Modifier.height(12.dp))
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                        NavigationDrawerItem(
+                            label = { Text(stringResource(R.string.drawer_settings)) },
+                            selected = false,
+                            icon = { Icon(Icons.Default.Settings, null) },
+                            onClick = {
+                                scope.launch { drawerState.close() }
+                                navigateToSettings()
+                            }
+                        )
 
-                    NavigationDrawerItem(
-                        label = {
+                        NavigationDrawerItem(
+                            label = { Text(stringResource(R.string.drawer_gpu_drivers)) },
+                            selected = false,
+                            icon = { Icon(Icons.Outlined.Memory, null) },
+                            onClick = {
+                                scope.launch { drawerState.close() }
+                                navigateToDrivers()
+                            }
+                        )
+
+                        NavigationDrawerItem(
+                            label = { Text(stringResource(R.string.drawer_edit_overlay)) },
+                            selected = false,
+                            icon = { Icon(painter = painterResource(id = R.drawable.ic_show_osc), null) },
+                            onClick = {
+                                context.startActivity(
+                                    Intent(
+                                        context,
+                                        OverlayEditActivity::class.java
+                                    )
+                                )
+                            }
+                        )
+
+                        NavigationDrawerItem(
+                            label = { Text(stringResource(R.string.drawer_frame_gen)) },
+                            selected = false,
+                            icon = { Icon(Icons.Outlined.AutoAwesomeMotion, null) },
+                            onClick = {
+                                scope.launch { drawerState.close() }
+                                navigateToFrameGen()
+                            }
+                        )
+
+                        NavigationDrawerItem(
+                            label = { Text(stringResource(R.string.drawer_updater)) },
+                            selected = false,
+                            icon = { Icon(Icons.Outlined.CloudDownload, null) },
+                            onClick = {
+                                scope.launch { drawerState.close() }
+                                navigateToUpdater()
+                            }
+                        )
+
+                        NavigationDrawerItem(
+                            label = { Text(stringResource(R.string.drawer_patches)) },
+                            selected = false,
+                            icon = { Icon(Icons.Outlined.Healing, null) },
+                            onClick = {
+                                scope.launch { drawerState.close() }
+                                navigateToAllPatches()
+                            }
+                        )
+
+                        NavigationDrawerItem(
+                            label = { Text(stringResource(R.string.drawer_debug)) },
+                            selected = false,
+                            icon = { Icon(Icons.Outlined.BugReport, null) },
+                            onClick = {
+                                scope.launch { drawerState.close() }
+                                navigateToDebug()
+                            }
+                        )
+
+                        NavigationDrawerItem(
+                            label = { Text(stringResource(R.string.drawer_diagnostics)) },
+                            selected = false,
+                            icon = { Icon(Icons.Outlined.MonitorHeart, null) },
+                            onClick = {
+                                scope.launch { drawerState.close() }
+                                navigateToDiagnostics()
+                            }
+                        )
+
+                        NavigationDrawerItem(
+                            label = { Text(stringResource(R.string.drawer_system_info)) },
+                            selected = false,
+                            icon = { Icon(Icons.Outlined.Info, contentDescription = null) },
+                            onClick = {
+                                scope.launch {
+                                    val info = withContext(Dispatchers.IO) {
+                                        runCatching { RPCS3.instance.systemInfo() }.getOrDefault("")
+                                    }
+                                    AlertDialogQueue.showDialog(
+                                        context.getString(R.string.system_info_title),
+                                        context.getString(R.string.app_name) + " " + appVersion + "\n\n" + info
+                                    )
+                                }
+                            }
+                        )
+                        NavigationDrawerItem(
+                            label = { Text(stringResource(R.string.drawer_support)) },
+                            selected = false,
+                            icon = { Icon(Icons.Outlined.HelpOutline, null) },
+                            onClick = {
+                                scope.launch { drawerState.close() }
+                                navigateToSupport()
+                            }
+                        )
+
+                        NavigationDrawerItem(
+                            label = { Text(stringResource(R.string.drawer_setup)) },
+                            selected = false,
+                            icon = { Icon(Icons.Outlined.CheckCircle, null) },
+                            onClick = {
+                                scope.launch { drawerState.close() }
+                                setupActive = true
+                            }
+                        )
+
+                        Spacer(Modifier.weight(1f))
+                        Column(
+                            modifier = Modifier.fillMaxWidth().padding(top = 24.dp, bottom = 20.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Image(
+                                painter = painterResource(R.drawable.duke_logo),
+                                contentDescription = stringResource(R.string.app_name),
+                                contentScale = ContentScale.Fit,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(88.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(Color.Black)
+                            )
+                            Spacer(Modifier.height(8.dp))
                             Text(
-                                stringResource(
-                                    R.string.drawer_firmware,
-                                    FirmwareRepository.version.value
-                                        ?: stringResource(R.string.drawer_firmware_none)
-                                )
-                            )
-                        },
-                        selected = false,
-                        icon = { Icon(Icons.Outlined.Build, contentDescription = null) },
-                        badge = {
-                            val progressChannel = FirmwareRepository.progressChannel
-                            val progress = ProgressRepository.getItem(progressChannel.value)
-                            val progressValue = progress?.value?.value
-                            val maxValue = progress?.value?.max
-                            if (progressValue != null && maxValue != null) {
-                                if (maxValue.longValue != 0L) {
-                                    CircularProgressIndicator(
-                                        modifier = Modifier
-                                            .width(32.dp)
-                                            .height(32.dp),
-                                        color = MaterialTheme.colorScheme.secondary,
-                                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                                        progress = {
-                                            progressValue.longValue.toFloat() / maxValue.longValue.toFloat()
-                                        },
-                                    )
-                                } else {
-                                    CircularProgressIndicator(
-                                        modifier = Modifier
-                                            .width(32.dp)
-                                            .height(32.dp),
-                                        color = MaterialTheme.colorScheme.secondary,
-                                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                                    )
-                                }
-                            }
-                        },
-                        onClick = {
-                            if (FirmwareRepository.progressChannel.value == null) {
-                                installFwLauncher.launch("*/*")
-                            }
-                        }
-                    )
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                    NavigationDrawerItem(
-                        label = { Text(stringResource(R.string.drawer_settings)) },
-                        selected = false,
-                        icon = { Icon(Icons.Default.Settings, null) },
-                        onClick = {
-                            scope.launch { drawerState.close() }
-                            navigateToSettings()
-                        }
-                    )
-
-                    NavigationDrawerItem(
-                        label = { Text(stringResource(R.string.drawer_gpu_drivers)) },
-                        selected = false,
-                        icon = { Icon(Icons.Outlined.Memory, null) },
-                        onClick = {
-                            scope.launch { drawerState.close() }
-                            navigateToDrivers()
-                        }
-                    )
-
-                    NavigationDrawerItem(
-                        label = { Text(stringResource(R.string.drawer_edit_overlay)) },
-                        selected = false,
-                        icon = { Icon(painter = painterResource(id = R.drawable.ic_show_osc), null) },
-                        onClick = {
-                            context.startActivity(
-                                Intent(
-                                    context,
-                                    OverlayEditActivity::class.java
-                                )
+                                text = appVersion,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                style = MaterialTheme.typography.labelSmall
                             )
                         }
-                    )
-
-                    NavigationDrawerItem(
-                        label = { Text(stringResource(R.string.drawer_frame_gen)) },
-                        selected = false,
-                        icon = { Icon(Icons.Outlined.AutoAwesomeMotion, null) },
-                        onClick = {
-                            scope.launch { drawerState.close() }
-                            navigateToFrameGen()
-                        }
-                    )
-
-                    NavigationDrawerItem(
-                        label = { Text(stringResource(R.string.drawer_updater)) },
-                        selected = false,
-                        icon = { Icon(Icons.Outlined.CloudDownload, null) },
-                        onClick = {
-                            scope.launch { drawerState.close() }
-                            navigateToUpdater()
-                        }
-                    )
-
-                    NavigationDrawerItem(
-                        label = { Text(stringResource(R.string.drawer_patches)) },
-                        selected = false,
-                        icon = { Icon(Icons.Outlined.Healing, null) },
-                        onClick = {
-                            scope.launch { drawerState.close() }
-                            navigateToAllPatches()
-                        }
-                    )
-
-                    NavigationDrawerItem(
-                        label = { Text(stringResource(R.string.drawer_debug)) },
-                        selected = false,
-                        icon = { Icon(Icons.Outlined.BugReport, null) },
-                        onClick = {
-                            scope.launch { drawerState.close() }
-                            navigateToDebug()
-                        }
-                    )
-
-                    NavigationDrawerItem(
-                        label = { Text(stringResource(R.string.drawer_diagnostics)) },
-                        selected = false,
-                        icon = { Icon(Icons.Outlined.MonitorHeart, null) },
-                        onClick = {
-                            scope.launch { drawerState.close() }
-                            navigateToDiagnostics()
-                        }
-                    )
-
-                    NavigationDrawerItem(
-                        label = { Text(stringResource(R.string.drawer_system_info)) },
-                        selected = false,
-                        icon = { Icon(Icons.Outlined.Info, contentDescription = null) },
-                        onClick = {
-                            scope.launch {
-                                val info = withContext(Dispatchers.IO) {
-                                    runCatching { RPCS3.instance.systemInfo() }.getOrDefault("")
-                                }
-                                AlertDialogQueue.showDialog(
-                                    context.getString(R.string.system_info_title),
-                                    info
-                                )
-                            }
-                        }
-                    )
-                    NavigationDrawerItem(
-                        label = { Text(stringResource(R.string.drawer_support)) },
-                        selected = false,
-                        icon = { Icon(Icons.Outlined.HelpOutline, null) },
-                        onClick = {
-                            scope.launch { drawerState.close() }
-                            navigateToSupport()
-                        }
-                    )
-
-                NavigationDrawerItem(
-                        label = { Text(stringResource(R.string.drawer_setup)) },
-                        selected = false,
-                        icon = { Icon(Icons.Outlined.CheckCircle, null) },
-                        onClick = {
-                            scope.launch { drawerState.close() }
-                            setupActive = true
-                        }
-                    )
-
                     }
+                }
             }
         }
     ) {
