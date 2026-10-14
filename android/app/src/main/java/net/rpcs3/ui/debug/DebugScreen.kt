@@ -188,7 +188,7 @@ fun DebugScreen(
                             val level = values[channel] ?: LogLevelOff
                             SettingInlineDropdown(
                                 label = channel,
-                                entries = levels,
+                                entries = levels.map { net.rpcs3.ui.settings.ConfigText.label(context, it) },
                                 selectedIndex = levels.indexOf(level).coerceAtLeast(0),
                                 highlighted = level != LogLevelOff,
                                 onSelected = { index ->

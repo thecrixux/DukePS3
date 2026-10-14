@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ppu_startup_title">Arranque PPU</string>
+    <string name="ppu_profile_label">Compilación PPU</string>
+    <string name="ppu_profile_current">Actual</string>
+    <string name="ppu_profile_balanced">Equilibrado</string>
+    <string name="ppu_profile_experimental">Experimental</string>
+    <string name="ppu_profile_hint">Equilibrado permite hasta 3 compiladores y Experimental hasta 4, según los límites de memoria. Puede aumentar el consumo de RAM y la temperatura. Se aplica a la compilación del arranque y requiere reiniciar el juego.</string>
+    <string name="ppu_priority_label">Conservar prioridad al cargar</string>
+    <string name="ppu_priority_hint">Conserva la prioridad heredada de los hilos durante la compilación inicial. Puede reducir la espera a costa de la respuesta de otras aplicaciones.</string>
+    <string name="ppu_diagnostics_label">Diagnóstico del arranque PPU</string>
+    <string name="ppu_diagnostics_hint">Registra tiempos de compilación, uso de caché, memoria del proceso y prioridad de hilos en el registro del emulador.</string>
+    <string name="ppu_cache_label">Caché PPU de prueba</string>
+    <string name="ppu_cache_normal">Habitual</string>
+    <string name="ppu_cache_hint">Habitual usa la caché PPU estándar. Los espacios 1–9 almacenan cachés independientes para medir la compilación y ocupan espacio adicional. Requiere reiniciar el juego.</string>
+</resources>

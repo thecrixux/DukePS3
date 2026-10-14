@@ -22,6 +22,10 @@ enum class PrecompilerServiceAction {
 }
 
 class PrecompilerService : Service() {
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(net.rpcs3.ui.settings.AppLanguage.contextFor(newBase))
+    }
+
     companion object {
         const val NoProgress = -1L
 
@@ -183,7 +187,7 @@ class PrecompilerService : Service() {
         }
 
         val installResult = when (mode) {
-            Mode.Firmware -> RPCS3.instance.installFw(fd, installProgress)
+            Mode.Firmware -> RPCS3.instance.installFw(fd, installProgress, net.rpcs3.ui.setup.FirmwareInstallOptions.prepareCache(this))
             Mode.AddIso -> RPCS3.instance.addIsoEntry(fd, installProgress)
             Mode.Package, Mode.PackageBatch -> RPCS3.instance.install(
                 fd, installProgress, PackageInspector.displayNameOf(this, uri)

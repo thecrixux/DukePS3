@@ -83,11 +83,12 @@ class ProgressRepository {
         }
 
         fun create(
-            context: Context,
+            sourceContext: Context,
             title: String,
             silent: Boolean = false,
             handler: (ProgressUpdateEntry) -> Unit = { _ -> }
         ): Long {
+            val context = net.rpcs3.ui.settings.AppLanguage.contextFor(sourceContext)
             var requestId: Long
             val entry = ProgressWithHandler(handler, mutableStateOf(ProgressEntry()))
             while (true) {

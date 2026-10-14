@@ -216,7 +216,7 @@ fun GameSettingsScreen(
         fun labelOf(entry: SettingsCategory): String = when (entry.label) {
             ControlsCategory -> controlsLabel
             DriverCategory -> driverLabel
-            else -> entry.label
+            else -> ConfigText.label(context, entry.label)
         }
 
         val save: () -> Unit = {
@@ -424,7 +424,7 @@ fun GameSettingsScreen(
                             itemsIndexed(categories) { index, entry ->
                                 CategoryChip(
                                     icon = iconForCategory(entry.label),
-                                    label = entry.parent?.let { "$it · ${labelOf(entry)}" }
+                                    label = entry.parent?.let { "${ConfigText.label(context, it)} · ${labelOf(entry)}" }
                                         ?: labelOf(entry),
                                     isSelected = index == selected,
                                     onClick = { selected = index }
@@ -663,7 +663,7 @@ internal fun SettingsNodeContent(
 
     if (includeSubGroups) {
         branches.forEach { (key, child) ->
-            SectionLabel(text = key)
+            SectionLabel(text = ConfigText.label(LocalContext.current, key))
             SettingsNodeContent(node = child, path = "$path@@$key", titleId = titleId)
         }
     }

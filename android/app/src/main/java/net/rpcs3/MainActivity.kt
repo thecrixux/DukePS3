@@ -5,7 +5,7 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Bundle
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,6 +17,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
@@ -85,7 +87,7 @@ private fun KeepScreenOn(active: Boolean) {
     }
 }
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     private var unregisterUsbEventListener: (() -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -107,6 +109,10 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
+            val uiLanguage = LocalConfiguration.current.locales[0]?.language ?: "en"
+            LaunchedEffect(uiLanguage, RPCS3.initialized.value) {
+                if (RPCS3.initialized.value) RPCS3.instance.setUiLanguage(uiLanguage)
+            }
             val firmwareInstalling = FirmwareRepository.progressChannel.value != null
             KeepScreenOn(active = firmwareInstalling)
 
@@ -152,6 +158,7 @@ class MainActivity : ComponentActivity() {
             thread(name = "rpcs3-startup") {
                 installBundledAssets(assets, RPCS3.rootDirectory)
                 installBundledPatches(assets, RPCS3.rootDirectory)
+                RPCS3.instance.setUiLanguage(resources.configuration.locales[0]?.language ?: "en")
                 RPCS3.instance.initialize(RPCS3.rootDirectory)
                 applyDefaultLogLevels()
                 val hookDirectory = "\"" + nativeLibraryDir + "\""

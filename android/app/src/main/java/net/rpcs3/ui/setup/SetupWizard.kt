@@ -59,6 +59,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.compose.runtime.DisposableEffect
+import net.rpcs3.ui.settings.AppLanguageButton
 import net.rpcs3.FirmwareRepository
 import net.rpcs3.Permission
 import net.rpcs3.R
@@ -106,6 +107,9 @@ fun SetupWizard(
     val firmwareVersion by FirmwareRepository.version
     val firmwareProgress by FirmwareRepository.progressChannel
     val firmwareReady = firmwareVersion != null
+    var prepareFirmwareCache by androidx.compose.runtime.saveable.rememberSaveable {
+        mutableStateOf(FirmwareInstallOptions.prepareCache(context))
+    }
 
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
@@ -136,6 +140,7 @@ fun SetupWizard(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Column(modifier = Modifier.widthIn(max = 520.dp).fillMaxWidth()) {
+                AppLanguageButton(modifier = Modifier.align(Alignment.End))
                 Text(
                     text = stringResource(R.string.setup_welcome),
                     color = SettingsStyle.TextPrimary,
@@ -165,7 +170,19 @@ fun SetupWizard(
                     done = firmwareReady,
                     busy = firmwareProgress != null,
                     actionLabel = stringResource(R.string.setup_install),
-                    onAction = onInstallFirmware
+                    onAction = {
+                        FirmwareInstallOptions.save(context, prepareFirmwareCache)
+                        onInstallFirmware()
+                    },
+                    extraContent = {
+                        if (!firmwareReady) {
+                            FirmwareInstallChoices(
+                                prepareCache = prepareFirmwareCache,
+                                enabled = firmwareProgress == null,
+                                onChange = { prepareFirmwareCache = it }
+                            )
+                        }
+                    }
                 )
 
                 Spacer(Modifier.height(10.dp))
@@ -241,7 +258,8 @@ private fun SetupStep(
     actionLabel: String,
     onAction: () -> Unit,
     optional: Boolean = false,
-    busy: Boolean = false
+    busy: Boolean = false,
+    extraContent: @Composable () -> Unit = {}
 ) {
     Row(
         modifier = Modifier
@@ -297,6 +315,7 @@ private fun SetupStep(
             }
             Spacer(Modifier.height(3.dp))
             Text(text = detail, color = SettingsStyle.TextSecondary, fontSize = 12.sp)
+            extraContent()
         }
 
         Spacer(Modifier.width(8.dp))

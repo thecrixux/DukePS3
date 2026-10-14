@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="firmware_install_title">Instalación del firmware</string>
+    <string name="firmware_install_hint">Ambos modos instalan y verifican todos los archivos del firmware. Elige cuándo se prepara su caché de módulos.</string>
+    <string name="firmware_install_complete">Instalación normal</string>
+    <string name="firmware_install_fast">Instalación rápida</string>
+    <string name="firmware_install_complete_detail">También prepara ahora la caché de módulos del firmware. La instalación tarda más.</string>
+    <string name="firmware_install_fast_detail">Prepara los módulos del firmware cuando los juegos los necesitan. Algunos juegos pueden tardar más en su primer arranque.</string>
+    <string name="firmware_select_file">Seleccionar archivo PUP</string>
+</resources>

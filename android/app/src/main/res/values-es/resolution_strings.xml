@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="video_output_mode">Modo de vídeo PS3</string>
-    <string name="video_output_mode_hint">Usa 720p para mayor compatibilidad. Esto cambia el modo de vídeo que se comunica al juego y requiere reiniciarlo. Para aumentar el detalle, usa Escala de renderizado más abajo; elige aquí 1080p solo en juegos compatibles con ese modo.</string>
+    <string name="video_output_mode_hint">Selecciona el modo de vídeo PS3 comunicado al juego. 720p ofrece mayor compatibilidad. La escala de renderizado controla el detalle de imagen por separado. Requiere reiniciar el juego.</string>
     <string name="render_scale">Escala de renderizado</string>
     <string name="render_scale_presets">Preajustes de renderizado</string>
     <string name="render_scale_100">100% · Nativa</string>
@@ -9,5 +9,5 @@
     <string name="render_scale_200">200% · 1440p*</string>
     <string name="render_scale_300">300% · 2160p*</string>
     <string name="render_scale_custom">%1$d%% · Personalizada</string>
-    <string name="render_scale_hint">* Tamaños para un juego que renderice a 1280×720. Las dimensiones reales dependen del juego y de qué superficies se puedan escalar. Para probar a 1080p, conserva el modo de vídeo PS3 en 720p y usa 150%. Subir la escala aumenta la carga de GPU y memoria; reinicia para comparar pruebas.</string>
+    <string name="render_scale_hint">* Tamaños para un juego que renderice a 1280×720; las dimensiones reales dependen del juego y de las superficies escalables. Una escala del 150% produce 1920×1080 desde 720p. Aumentar la escala exige más GPU y memoria.</string>
 </resources>

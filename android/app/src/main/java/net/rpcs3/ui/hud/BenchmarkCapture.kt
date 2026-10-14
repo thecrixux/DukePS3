@@ -66,7 +66,7 @@ object BenchmarkCapture {
 
     fun finish(context: Context) {
         if (!recording || busy) return
-        val app = context.applicationContext
+        val app = net.rpcs3.ui.settings.AppLanguage.contextFor(context.applicationContext)
         val details = metadata
         recording = false
         busy = true
@@ -116,7 +116,7 @@ object BenchmarkCapture {
     fun save(context: Context, uri: Uri) {
         val source = latest ?: return
         if (busy || recording) return
-        val app = context.applicationContext
+        val app = net.rpcs3.ui.settings.AppLanguage.contextFor(context.applicationContext)
         busy = true
         scope.launch {
             runCatching {

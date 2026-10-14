@@ -42,6 +42,7 @@ import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Healing
 import androidx.compose.material.icons.outlined.HelpOutline
 import androidx.compose.material.icons.outlined.Memory
+import androidx.compose.material.icons.outlined.Public
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Settings
@@ -90,6 +91,7 @@ import kotlinx.coroutines.withContext
 import kotlin.concurrent.thread
 import kotlinx.coroutines.launch
 import net.rpcs3.EmulatorState
+import net.rpcs3.ui.settings.AppLanguageDialog
 import net.rpcs3.FirmwareRepository
 import net.rpcs3.PrecompilerService
 import net.rpcs3.ui.support.SupportScreen
@@ -368,6 +370,8 @@ fun GamesDestination(
 
     var pendingIso by remember { mutableStateOf<Uri?>(null) }
     var pendingFolder by remember { mutableStateOf<Uri?>(null) }
+    var showLanguage by remember { mutableStateOf(false) }
+    if (showLanguage) AppLanguageDialog { showLanguage = false }
     var needsStorage by remember { mutableStateOf(false) }
     val firmwareLoaded by FirmwareRepository.loaded
     var setupActive by remember { mutableStateOf<Boolean?>(null) }
@@ -447,6 +451,16 @@ fun GamesDestination(
         }
     )
 
+    var showFirmwareOptions by remember { mutableStateOf(false) }
+    val selectFirmware = { showFirmwareOptions = true }
+    if (showFirmwareOptions) net.rpcs3.ui.setup.FirmwareInstallDialog(
+        onSelect = {
+            showFirmwareOptions = false
+            installFwLauncher.launch("*/*")
+        },
+        onDismiss = { showFirmwareOptions = false }
+    )
+
     val gameFolderPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocumentTree(),
         onResult = { uri: Uri? ->
@@ -516,11 +530,20 @@ fun GamesDestination(
                             },
                             onClick = {
                                 if (FirmwareRepository.progressChannel.value == null) {
-                                    installFwLauncher.launch("*/*")
+                                    selectFirmware()
                                 }
                             }
                         )
                         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                        NavigationDrawerItem(
+                            label = { Text(stringResource(R.string.app_language_title)) },
+                            selected = false,
+                            icon = { Icon(Icons.Outlined.Public, null) },
+                            onClick = {
+                                scope.launch { drawerState.close() }
+                                showLanguage = true
+                            }
+                        )
                         NavigationDrawerItem(
                             label = { Text(stringResource(R.string.drawer_settings)) },
                             selected = false,

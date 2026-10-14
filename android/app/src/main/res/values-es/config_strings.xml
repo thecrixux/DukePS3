@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="config_text_000" formatted="false">Núcleo</string>
+    <string name="config_text_001" formatted="false">Decodificador PPU</string>
+    <string name="config_text_002" formatted="false">Hilos PPU</string>
+    <string name="config_text_003" formatted="false">Depuración PPU</string>
+    <string name="config_text_004" formatted="false">Historial de llamadas PPU</string>
+    <string name="config_text_005" formatted="false">Guardar registros LLVM</string>
+    <string name="config_text_006" formatted="false">CPU de destino LLVM</string>
+    <string name="config_text_007" formatted="false">Máximo de hilos de compilación LLVM</string>
+    <string name="config_text_008" formatted="false">Precompilación LLVM</string>
+    <string name="config_text_009" formatted="false">Perfil de compilación PPU</string>
+    <string name="config_text_010" formatted="false">Conservar prioridad al cargar PPU</string>
+    <string name="config_text_011" formatted="false">Diagnóstico de compilación PPU</string>
+    <string name="config_text_012" formatted="false">Caché PPU de prueba</string>
+    <string name="config_text_013" formatted="false">Modo de planificación de hilos</string>
+    <string name="config_text_014" formatted="false">Activar DAZ y FTZ</string>
+    <string name="config_text_015" formatted="false">Decodificador SPU</string>
+    <string name="config_text_016" formatted="false">Porcentaje de espera activa de reservas SPU 1</string>
+    <string name="config_text_017" formatted="false">Espera activa de reservas SPU</string>
+    <string name="config_text_018" formatted="false">Porcentaje de espera activa SPU GETLLAR</string>
+    <string name="config_text_019" formatted="false">Desactivar optimización de espera SPU GETLLAR</string>
+    <string name="config_text_020" formatted="false">Depuración SPU</string>
+    <string name="config_text_021" formatted="false">Depuración MFC</string>
+    <string name="config_text_022" formatted="false">Hilos SPU preferidos</string>
+    <string name="config_text_023" formatted="false">Penalización de espera SPU</string>
+    <string name="config_text_024" formatted="false">Detección de bucles SPU</string>
+    <string name="config_text_025" formatted="false">Máximo de hilos SPURS</string>
+    <string name="config_text_026" formatted="false">Tamaño de bloque SPU</string>
+    <string name="config_text_027" formatted="false">DMA SPU preciso</string>
+    <string name="config_text_028" formatted="false">Reservas SPU precisas</string>
+    <string name="config_text_029" formatted="false">Escrituras precisas de líneas de caché</string>
+    <string name="config_text_030" formatted="false">Acceso preciso a reservas RSX</string>
+    <string name="config_text_031" formatted="false">Prioridad de reservas PPU sobre SPU</string>
+    <string name="config_text_032" formatted="false">Afinidad</string>
+    <string name="config_text_033" formatted="false">CPU0</string>
+    <string name="config_text_034" formatted="false">CPU1</string>
+    <string name="config_text_035" formatted="false">CPU2</string>
+    <string name="config_text_036" formatted="false">CPU3</string>
+    <string name="config_text_037" formatted="false">CPU4</string>
+    <string name="config_text_038" formatted="false">CPU5</string>
+    <string name="config_text_039" formatted="false">CPU6</string>
+    <string name="config_text_040" formatted="false">CPU7</string>
+    <string name="config_text_041" formatted="false">Precisión de lectura FIFO RSX</string>
+    <string name="config_text_042" formatted="false">Verificación SPU</string>
+    <string name="config_text_043" formatted="false">Caché SPU</string>
+    <string name="config_text_044" formatted="false">Perfilador SPU</string>
+    <string name="config_text_045" formatted="false">Perfilador PPU</string>
+    <string name="config_text_046" formatted="false">Límite de reordenación de comandos MFC</string>
+    <string name="config_text_047" formatted="false">Tiempo límite de comandos MFC</string>
+    <string name="config_text_048" formatted="false">Reordenar comandos MFC por pasos</string>
+    <string name="config_text_049" formatted="false">Precisión XFloat SPU</string>
+    <string name="config_text_050" formatted="false">Longitud máxima de reservas PPU precisas de 128 bytes</string>
+    <string name="config_text_051" formatted="false">Omitir trampas PPU</string>
+    <string name="config_text_052" formatted="false">Verificación SPU precisa</string>
+    <string name="config_text_053" formatted="false">Tratamiento de NaN vectorial PPU</string>
+    <string name="config_text_054" formatted="false">DFMA preciso</string>
+    <string name="config_text_055" formatted="false">Activar bit de saturación PPU</string>
+    <string name="config_text_056" formatted="false">Modo Non-Java PPU preciso</string>
+    <string name="config_text_057" formatted="false">Valores NaN vectoriales PPU precisos</string>
+    <string name="config_text_058" formatted="false">Activar bits FPCC PPU</string>
+    <string name="config_text_059" formatted="false">Modo de consola de depuración</string>
+    <string name="config_text_060" formatted="false">Interceptar funciones estáticas</string>
+    <string name="config_text_061" formatted="false">Control de bibliotecas</string>
+    <string name="config_text_062" formatted="false">HLE lwmutex</string>
+    <string name="config_text_063" formatted="false">Límite inferior LLVM SPU</string>
+    <string name="config_text_064" formatted="false">Límite superior LLVM SPU</string>
+    <string name="config_text_065" formatted="false">Escala de reloj</string>
+    <string name="config_text_066" formatted="false">Retardo de activación SPU</string>
+    <string name="config_text_067" formatted="false">Máscara de hilos del retardo SPU</string>
+    <string name="config_text_068" formatted="false">Máximo de interrupciones de CPU</string>
+    <string name="config_text_069" formatted="false">Permitir interrupciones de CPU por RSX</string>
+    <string name="config_text_070" formatted="false">Precisión de temporizadores de espera</string>
+    <string name="config_text_071" formatted="false">Ajuste del tiempo usleep</string>
+    <string name="config_text_072" formatted="false">Umbral del informe de rendimiento</string>
+    <string name="config_text_073" formatted="false">Informe de rendimiento</string>
+    <string name="config_text_074" formatted="false">Asumir depurador externo</string>
+    <string name="config_text_075" formatted="false">Sistema de archivos virtual</string>
+    <string name="config_text_076" formatted="false">Activar /host_root/</string>
+    <string name="config_text_077" formatted="false">Inicializar carpetas</string>
+    <string name="config_text_078" formatted="false">Limitar tamaño de caché de disco</string>
+    <string name="config_text_079" formatted="false">Tamaño máximo de caché de disco (MB)</string>
+    <string name="config_text_080" formatted="false">Vaciar /dev_hdd0/tmp/</string>
+    <string name="config_text_081" formatted="false">Emular velocidad de lectura HDD</string>
+    <string name="config_text_082" formatted="false">Emular velocidad de lectura BD-ROM</string>
+    <string name="config_text_083" formatted="false">Vídeo</string>
+    <string name="config_text_084" formatted="false">Renderizador</string>
+    <string name="config_text_085" formatted="false">Resolución</string>
+    <string name="config_text_086" formatted="false">Relación de aspecto</string>
+    <string name="config_text_087" formatted="false">Límite de FPS</string>
+    <string name="config_text_088" formatted="false">Segundo límite de FPS</string>
+    <string name="config_text_089" formatted="false">MSAA</string>
+    <string name="config_text_090" formatted="false">Modo de shaders</string>
+    <string name="config_text_091" formatted="false">Precisión de shaders</string>
+    <string name="config_text_092" formatted="false">Modo de sincronización vertical</string>
+    <string name="config_text_093" formatted="false">Escribir búferes de color</string>
+    <string name="config_text_094" formatted="false">Escribir búfer de profundidad</string>
+    <string name="config_text_095" formatted="false">Leer búferes de color</string>
+    <string name="config_text_096" formatted="false">Leer búfer de profundidad</string>
+    <string name="config_text_097" formatted="false">Procesar memoria RSX en mosaicos</string>
+    <string name="config_text_098" formatted="false">Registrar programas de shaders</string>
+    <string name="config_text_099" formatted="false">Salida de depuración</string>
+    <string name="config_text_100" formatted="false">Panel de depuración</string>
+    <string name="config_text_101" formatted="false">Modo de compatibilidad con RenderDoc</string>
+    <string name="config_text_102" formatted="false">Escalar texturas en GPU</string>
+    <string name="config_text_103" formatted="false">Estirar al área de pantalla</string>
+    <string name="config_text_104" formatted="false">Forzar búfer Z de alta precisión</string>
+    <string name="config_text_105" formatted="false">Modo de renderizado estricto</string>
+    <string name="config_text_106" formatted="false">Sesgo de la heurística de alias de framebuffer</string>
+    <string name="config_text_107" formatted="false">Desactivar consultas de oclusión ZCull</string>
+    <string name="config_text_108" formatted="false">Desactivar salida de vídeo</string>
+    <string name="config_text_109" formatted="false">Desactivar caché de vértices</string>
+    <string name="config_text_110" formatted="false">Desactivar reordenación FIFO</string>
+    <string name="config_text_111" formatted="false">Emular comparación especial de profundidad</string>
+    <string name="config_text_112" formatted="false">Omitir fotogramas</string>
+    <string name="config_text_113" formatted="false">Forzar copia gráfica por CPU</string>
+    <string name="config_text_114" formatted="false">Desactivar caché de shaders en disco</string>
+    <string name="config_text_115" formatted="false">Desactivar asignador de memoria Vulkan</string>
+    <string name="config_text_116" formatted="false">Rango RGB completo</string>
+    <string name="config_text_117" formatted="false">Vaciado estricto de texturas</string>
+    <string name="config_text_118" formatted="false">RSX multihilo</string>
+    <string name="config_text_119" formatted="false">Sincronización ZCULL relajada</string>
+    <string name="config_text_120" formatted="false">Forzar resolución MSAA por hardware</string>
+    <string name="config_text_121" formatted="false">Pantalla 3D</string>
+    <string name="config_text_122" formatted="false">Modo de pantalla 3D</string>
+    <string name="config_text_123" formatted="false">Tamaño de pantalla en pulgadas</string>
+    <string name="config_text_124" formatted="false">Depurar analizador de programas</string>
+    <string name="config_text_125" formatted="false">Estadísticas ZCULL precisas</string>
+    <string name="config_text_126" formatted="false">Fotogramas consecutivos que renderizar</string>
+    <string name="config_text_127" formatted="false">Fotogramas consecutivos que omitir</string>
+    <string name="config_text_128" formatted="false">Escala de renderizado</string>
+    <string name="config_text_129" formatted="false">Filtro anisotrópico forzado</string>
+    <string name="config_text_130" formatted="false">Ajuste del sesgo LOD de texturas</string>
+    <string name="config_text_131" formatted="false">Dimensión mínima escalable</string>
+    <string name="config_text_132" formatted="false">Hilos de compilación de shaders</string>
+    <string name="config_text_133" formatted="false">Tiempo límite de recuperación del controlador</string>
+    <string name="config_text_134" formatted="false">Retardo de activación del controlador</string>
+    <string name="config_text_135" formatted="false">Frecuencia VBlank</string>
+    <string name="config_text_136" formatted="false">Corrección VBlank NTSC</string>
+    <string name="config_text_137" formatted="false">Distribución de memoria DECR</string>
+    <string name="config_text_138" formatted="false">Permitir etiquetas de GPU anfitriona</string>
+    <string name="config_text_139" formatted="false">Desactivar cálculo rápido MSL</string>
+    <string name="config_text_140" formatted="false">Desactivar gestor de memoria asíncrono</string>
+    <string name="config_text_141" formatted="false">Modo de escalado de salida</string>
+    <string name="config_text_142" formatted="false">Grabar con superposiciones</string>
+    <string name="config_text_143" formatted="false">Desactivar mezcla por hardware</string>
+    <string name="config_text_144" formatted="false">Desactivar conversión de color por hardware</string>
+    <string name="config_text_145" formatted="false">Intensidad de nitidez FidelityFX CAS</string>
+    <string name="config_text_146" formatted="false">Desactivar escalado del motor de copia gráfica</string>
+    <string name="config_text_147" formatted="false">Vulkan</string>
+    <string name="config_text_148" formatted="false">Adaptador</string>
+    <string name="config_text_149" formatted="false">Pantalla completa exclusiva</string>
+    <string name="config_text_150" formatted="false">Transferencia asíncrona de texturas</string>
+    <string name="config_text_151" formatted="false">Planificador asíncrono de colas</string>
+    <string name="config_text_152" formatted="false">Límite de asignación VRAM (MB)</string>
+    <string name="config_text_153" formatted="false">Usar Re-BAR para transferencias a GPU</string>
+    <string name="config_text_154" formatted="false">Controlador personalizado</string>
+    <string name="config_text_155" formatted="false">Ruta</string>
+    <string name="config_text_156" formatted="false">Carpeta interna de datos</string>
+    <string name="config_text_157" formatted="false">Carpeta de interceptación</string>
+    <string name="config_text_158" formatted="false">Modo turbo</string>
+    <string name="config_text_159" formatted="false">Soluciones de compatibilidad</string>
+    <string name="config_text_160" formatted="false">Sin reinicio de primitivas</string>
+    <string name="config_text_161" formatted="false">Normalizar valores de coma flotante</string>
+    <string name="config_text_162" formatted="false">Desactivar reinicio de barreras</string>
+    <string name="config_text_163" formatted="false">Emular renderizado condicional</string>
+    <string name="config_text_164" formatted="false">Ámbitos estrictos de consulta</string>
+    <string name="config_text_165" formatted="false">Forzar reutilización de grupos de consultas</string>
+    <string name="config_text_166" formatted="false">Indicadores de rendimiento</string>
+    <string name="config_text_167" formatted="false">Activado</string>
+    <string name="config_text_168" formatted="false">Gráfica de FPS</string>
+    <string name="config_text_169" formatted="false">Gráfica de tiempo de fotograma</string>
+    <string name="config_text_170" formatted="false">Muestras de FPS</string>
+    <string name="config_text_171" formatted="false">Muestras de tiempo de fotograma</string>
+    <string name="config_text_172" formatted="false">Nivel de detalle</string>
+    <string name="config_text_173" formatted="false">Detalle de la gráfica de FPS</string>
+    <string name="config_text_174" formatted="false">Detalle de la gráfica de tiempo de fotograma</string>
+    <string name="config_text_175" formatted="false">Intervalo de indicadores (ms)</string>
+    <string name="config_text_176" formatted="false">Tamaño de fuente (px)</string>
+    <string name="config_text_177" formatted="false">Posición</string>
+    <string name="config_text_178" formatted="false">Fuente</string>
+    <string name="config_text_179" formatted="false">Margen horizontal (%)</string>
+    <string name="config_text_180" formatted="false">Margen vertical (%)</string>
+    <string name="config_text_181" formatted="false">Centrar horizontalmente</string>
+    <string name="config_text_182" formatted="false">Centrar verticalmente</string>
+    <string name="config_text_183" formatted="false">Opacidad (%)</string>
+    <string name="config_text_184" formatted="false">Color del texto (hex)</string>
+    <string name="config_text_185" formatted="false">Fondo del texto (hex)</string>
+    <string name="config_text_186" formatted="false">Color del título (hex)</string>
+    <string name="config_text_187" formatted="false">Fondo del título (hex)</string>
+    <string name="config_text_188" formatted="false">Usar espacio de la ventana</string>
+    <string name="config_text_189" formatted="false">Interfaz nativa</string>
+    <string name="config_text_190" formatted="false">Fuente predeterminada</string>
+    <string name="config_text_191" formatted="false">Diálogo de carga de shaders</string>
+    <string name="config_text_192" formatted="false">Permitir fondo personalizado</string>
+    <string name="config_text_193" formatted="false">Intensidad de oscurecimiento</string>
+    <string name="config_text_194" formatted="false">Intensidad de desenfoque</string>
+    <string name="config_text_195" formatted="false">Matrices de anaglifo personalizadas</string>
+    <string name="config_text_196" formatted="false">Matriz izquierda</string>
+    <string name="config_text_197" formatted="false">Matriz derecha</string>
+    <string name="config_text_198" formatted="false">Audio</string>
+    <string name="config_text_199" formatted="false">Proveedor de audio</string>
+    <string name="config_text_200" formatted="false">Puerto AV de audio RSX</string>
+    <string name="config_text_201" formatted="false">Capturar audio en archivo</string>
+    <string name="config_text_202" formatted="false">Convertir a 16 bits</string>
+    <string name="config_text_203" formatted="false">Formato de audio</string>
+    <string name="config_text_204" formatted="false">Formatos de audio</string>
+    <string name="config_text_205" formatted="false">Distribución de canales de audio</string>
+    <string name="config_text_206" formatted="false">Dispositivo de audio</string>
+    <string name="config_text_207" formatted="false">Motor de audio Android</string>
+    <string name="config_text_208" formatted="false">Volumen principal</string>
+    <string name="config_text_209" formatted="false">Activar búfer de audio</string>
+    <string name="config_text_210" formatted="false">Duración del búfer de audio</string>
+    <string name="config_text_211" formatted="false">Ajustar velocidad del audio</string>
+    <string name="config_text_212" formatted="false">Desactivar omisión de muestras</string>
+    <string name="config_text_213" formatted="false">Umbral de ajuste de velocidad del audio</string>
+    <string name="config_text_214" formatted="false">Tipo de micrófono</string>
+    <string name="config_text_215" formatted="false">Dispositivos de micrófono</string>
+    <string name="config_text_216" formatted="false">Gestor de música</string>
+    <string name="config_text_217" formatted="false">Entrada y salida</string>
+    <string name="config_text_218" formatted="false">Teclado</string>
+    <string name="config_text_219" formatted="false">Ratón</string>
+    <string name="config_text_220" formatted="false">Cámara</string>
+    <string name="config_text_221" formatted="false">Tipo de cámara</string>
+    <string name="config_text_222" formatted="false">Voltear cámara</string>
+    <string name="config_text_223" formatted="false">ID de cámara</string>
+    <string name="config_text_224" formatted="false">ID de cámara SDL</string>
+    <string name="config_text_225" formatted="false">Move</string>
+    <string name="config_text_226" formatted="false">Mando Buzz emulado</string>
+    <string name="config_text_227" formatted="false">Plato giratorio emulado</string>
+    <string name="config_text_228" formatted="false">Guitarra GHLtar emulada</string>
+    <string name="config_text_229" formatted="false">Modo del gestor de mandos</string>
+    <string name="config_text_230" formatted="false">Mantener mandos conectados</string>
+    <string name="config_text_231" formatted="false">Espera del gestor de mandos (microsegundos)</string>
+    <string name="config_text_232" formatted="false">Entrada en segundo plano</string>
+    <string name="config_text_233" formatted="false">Mostrar cursor Move</string>
+    <string name="config_text_234" formatted="false">Mostrar esferas Move</string>
+    <string name="config_text_235" formatted="false">Permitir que el juego ajuste el color Move</string>
+    <string name="config_text_236" formatted="false">Asignar controles en pantalla al jugador uno</string>
+    <string name="config_text_237" formatted="false">Dispositivos MIDI emulados</string>
+    <string name="config_text_238" formatted="false">Cargar asignaciones SDL GameController</string>
+    <string name="config_text_239" formatted="false">Giroscopio mediante ratón</string>
+    <string name="config_text_240" formatted="false">Panel de depuración de entrada y salida</string>
+    <string name="config_text_241" formatted="false">Panel de depuración del ratón</string>
+    <string name="config_text_242" formatted="false">Cono de rotación Move simulado</string>
+    <string name="config_text_243" formatted="false">Cono de rotación Move simulado (vertical)</string>
+    <string name="config_text_244" formatted="false">Modo del gestor USIO</string>
+    <string name="config_text_245" formatted="false">Sistema PS3</string>
+    <string name="config_text_246" formatted="false">Región de licencia</string>
+    <string name="config_text_247" formatted="false">Idioma de la consola PS3</string>
+    <string name="config_text_248" formatted="false">Tipo de teclado</string>
+    <string name="config_text_249" formatted="false">Botón de confirmación</string>
+    <string name="config_text_250" formatted="false">Formato de fecha</string>
+    <string name="config_text_251" formatted="false">Formato de hora</string>
+    <string name="config_text_252" formatted="false">Ajuste de hora de la consola (s)</string>
+    <string name="config_text_253" formatted="false">Nombre del sistema</string>
+    <string name="config_text_254" formatted="false">PSID de la consola</string>
+    <string name="config_text_255" formatted="false">Modelo HDD</string>
+    <string name="config_text_256" formatted="false">Número de serie HDD</string>
+    <string name="config_text_257" formatted="false">Argumentos del proceso</string>
+    <string name="config_text_258" formatted="false">Red</string>
+    <string name="config_text_259" formatted="false">Acceso a Internet</string>
+    <string name="config_text_260" formatted="false">Dirección IP</string>
+    <string name="config_text_261" formatted="false">Dirección de enlace</string>
+    <string name="config_text_262" formatted="false">Dirección DNS</string>
+    <string name="config_text_263" formatted="false">Lista de sustitución de IP</string>
+    <string name="config_text_264" formatted="false">Activar UPnP</string>
+    <string name="config_text_265" formatted="false">Obtener MAC del PSID</string>
+    <string name="config_text_266" formatted="false">Estado PSN</string>
+    <string name="config_text_267" formatted="false">País PSN</string>
+    <string name="config_text_268" formatted="false">Activar clanes</string>
+    <string name="config_text_269" formatted="false">Estados guardados</string>
+    <string name="config_text_270" formatted="false">Iniciar en pausa</string>
+    <string name="config_text_271" formatted="false">Suspender emulación al guardar estado</string>
+    <string name="config_text_272" formatted="false">Modo de estados compatibles</string>
+    <string name="config_text_273" formatted="false">Estados en modo de inspección</string>
+    <string name="config_text_274" formatted="false">Guardar datos de juegos en disco</string>
+    <string name="config_text_275" formatted="false">Máximo de estados guardados</string>
+    <string name="config_text_276" formatted="false">Espacio máximo de estados guardados (MiB)</string>
+    <string name="config_text_277" formatted="false">Otros</string>
+    <string name="config_text_278" formatted="false">Iniciar juegos automáticamente tras la carga</string>
+    <string name="config_text_279" formatted="false">Cerrar DukePS3 al finalizar el proceso</string>
+    <string name="config_text_280" formatted="false">Pausar emulación al salir de DukePS3</string>
+    <string name="config_text_281" formatted="false">Iniciar juegos en pantalla completa</string>
+    <string name="config_text_282" formatted="false">Iniciar en modo Big Picture</string>
+    <string name="config_text_283" formatted="false">Mantener pantalla encendida durante el juego</string>
+    <string name="config_text_284" formatted="false">Mostrar notificaciones de trofeos</string>
+    <string name="config_text_285" formatted="false">Mostrar notificaciones RPCN</string>
+    <string name="config_text_286" formatted="false">Mostrar aviso de compilación de shaders</string>
+    <string name="config_text_287" formatted="false">Mostrar aviso de compilación PPU</string>
+    <string name="config_text_288" formatted="false">Mostrar aviso de guardado y carga automáticos</string>
+    <string name="config_text_289" formatted="false">Mostrar aviso de intensidad de presión</string>
+    <string name="config_text_290" formatted="false">Mostrar aviso del limitador analógico</string>
+    <string name="config_text_291" formatted="false">Mostrar aviso de cambio de ratón y teclado</string>
+    <string name="config_text_292" formatted="false">Mostrar avisos de errores graves</string>
+    <string name="config_text_293" formatted="false">Mostrar avisos de captura</string>
+    <string name="config_text_294" formatted="false">Usar interfaz nativa</string>
+    <string name="config_text_295" formatted="false">Búsqueda recursiva</string>
+    <string name="config_text_296" formatted="false">Servidor GDB</string>
+    <string name="config_text_297" formatted="false">Silenciar todos los registros</string>
+    <string name="config_text_298" formatted="false">Formato del título de ventana</string>
+    <string name="config_text_299" formatted="false">Pausar emulación en el menú de inicio</string>
+    <string name="config_text_300" formatted="false">Reproducir música durante el arranque</string>
+    <string name="config_text_301" formatted="false">Activar GameMode</string>
+    <string name="config_text_302" formatted="false">Registro</string>
+    <string name="config_text_303" formatted="false">Desactivado</string>
+    <string name="config_text_304" formatted="false">Básico</string>
+    <string name="config_text_305" formatted="false">Directo</string>
+    <string name="config_text_306" formatted="false">Desactivado</string>
+    <string name="config_text_307" formatted="false">Automático</string>
+    <string name="config_text_308" formatted="false">Priorizar color</string>
+    <string name="config_text_309" formatted="false">Priorizar profundidad</string>
+    <string name="config_text_310" formatted="false">Automático</string>
+    <string name="config_text_311" formatted="false">Mono</string>
+    <string name="config_text_312" formatted="false">Estéreo</string>
+    <string name="config_text_313" formatted="false">Estéreo LFE</string>
+    <string name="config_text_314" formatted="false">Cuadrafónico</string>
+    <string name="config_text_315" formatted="false">Cuadrafónico LFE</string>
+    <string name="config_text_316" formatted="false">Envolvente 5.1</string>
+    <string name="config_text_317" formatted="false">Envolvente 7.1</string>
+    <string name="config_text_318" formatted="false">Ninguno</string>
+    <string name="config_text_319" formatted="false">Mínimo</string>
+    <string name="config_text_320" formatted="false">Bajo</string>
+    <string name="config_text_321" formatted="false">Medio</string>
+    <string name="config_text_322" formatted="false">Alto</string>
+    <string name="config_text_323" formatted="false">Mostrar mínimo y máximo</string>
+    <string name="config_text_324" formatted="false">Mostrar 1% y promedio</string>
+    <string name="config_text_325" formatted="false">Todos</string>
+    <string name="config_text_326" formatted="false">Arriba a la izquierda</string>
+    <string name="config_text_327" formatted="false">Arriba a la derecha</string>
+    <string name="config_text_328" formatted="false">Abajo a la izquierda</string>
+    <string name="config_text_329" formatted="false">Abajo a la derecha</string>
+    <string name="config_text_330" formatted="false">Rápido</string>
+    <string name="config_text_331" formatted="false">Atómico</string>
+    <string name="config_text_332" formatted="false">Ordenado y atómico</string>
+    <string name="config_text_333" formatted="false">Según el sistema anfitrión</string>
+    <string name="config_text_334" formatted="false">Solo usleep</string>
+    <string name="config_text_335" formatted="false">Todos los temporizadores</string>
+    <string name="config_text_336" formatted="false">Confirmar con círculo</string>
+    <string name="config_text_337" formatted="false">Confirmar con cruz</string>
+    <string name="config_text_338" formatted="false">Desconectado</string>
+    <string name="config_text_339" formatted="false">Conectado</string>
+    <string name="config_text_340" formatted="false">Simulado</string>
+    <string name="config_text_341" formatted="false">Intérprete (estático)</string>
+    <string name="config_text_342" formatted="false">Intérprete (dinámico)</string>
+    <string name="config_text_343" formatted="false">Recompilador (ASMJIT)</string>
+    <string name="config_text_344" formatted="false">Recompilador (LLVM)</string>
+    <string name="config_text_345" formatted="false">Seguro</string>
+    <string name="config_text_346" formatted="false">Desactivado</string>
+    <string name="config_text_347" formatted="false">Pantalla</string>
+    <string name="config_text_348" formatted="false">Nativo PS3</string>
+    <string name="config_text_349" formatted="false">Sin límite</string>
+    <string name="config_text_350" formatted="false">Estándar</string>
+    <string name="config_text_351" formatted="false">SingStar real</string>
+    <string name="config_text_352" formatted="false">Simulado</string>
+    <string name="config_text_353" formatted="false">Desconocido</string>
+    <string name="config_text_354" formatted="false">Horizontal</string>
+    <string name="config_text_355" formatted="false">Vertical</string>
+    <string name="config_text_356" formatted="false">Ambos</string>
+    <string name="config_text_357" formatted="false">Real</string>
+    <string name="config_text_358" formatted="false">Ratón directo</string>
+    <string name="config_text_359" formatted="false">Pistola</string>
+    <string name="config_text_360" formatted="false">Un hilo</string>
+    <string name="config_text_361" formatted="false">Multihilo</string>
+    <string name="config_text_362" formatted="false">1 mando</string>
+    <string name="config_text_363" formatted="false">2 mandos</string>
+    <string name="config_text_364" formatted="false">Juegos de lucha</string>
+    <string name="config_text_365" formatted="false">Juegos de disparos</string>
+    <string name="config_text_366" formatted="false">Recompilador clásico (un hilo)</string>
+    <string name="config_text_367" formatted="false">Recompilador asíncrono (multihilo)</string>
+    <string name="config_text_368" formatted="false">Recompilador asíncrono con intérprete de shaders</string>
+    <string name="config_text_369" formatted="false">Solo intérprete de shaders</string>
+    <string name="config_text_370" formatted="false">Salida AV múltiple</string>
+    <string name="config_text_371" formatted="false">Manual</string>
+    <string name="config_text_372" formatted="false">Planificador RPCS3</string>
+    <string name="config_text_373" formatted="false">Planificador alternativo RPCS3</string>
+    <string name="config_text_374" formatted="false">Sistema operativo</string>
+    <string name="config_text_375" formatted="false">Máximo</string>
+    <string name="config_text_376" formatted="false">Desactivar</string>
+    <string name="config_text_377" formatted="false">Activar</string>
+    <string name="config_text_378" formatted="false">Lado a lado</string>
+    <string name="config_text_379" formatted="false">Arriba y abajo</string>
+    <string name="config_text_380" formatted="false">Entrelazado</string>
+    <string name="config_text_381" formatted="false">Anaglifo rojo y verde</string>
+    <string name="config_text_382" formatted="false">Anaglifo rojo y azul</string>
+    <string name="config_text_383" formatted="false">Anaglifo rojo y cian</string>
+    <string name="config_text_384" formatted="false">Anaglifo magenta y cian</string>
+    <string name="config_text_385" formatted="false">Anaglifo trioscópico</string>
+    <string name="config_text_386" formatted="false">Anaglifo ámbar y azul</string>
+    <string name="config_text_387" formatted="false">Anaglifo personalizado</string>
+    <string name="config_text_388" formatted="false">Vecino más próximo</string>
+    <string name="config_text_389" formatted="false">Bilineal</string>
+    <string name="config_text_390" formatted="false">Preciso</string>
+    <string name="config_text_391" formatted="false">Aproximado</string>
+    <string name="config_text_392" formatted="false">Relajado</string>
+    <string name="config_text_393" formatted="false">Impreciso</string>
+    <string name="config_text_394" formatted="false">aaaa/mm/dd</string>
+    <string name="config_text_395" formatted="false">dd/mm/aaaa</string>
+    <string name="config_text_396" formatted="false">mm/dd/aaaa</string>
+    <string name="config_text_397" formatted="false">12 horas</string>
+    <string name="config_text_398" formatted="false">24 horas</string>
+    <string name="config_text_399" formatted="false">Adaptativo</string>
+    <string name="config_text_400" formatted="false">Completo</string>
+    <string name="config_text_401" formatted="false">General</string>
+    <string name="config_text_402" formatted="false">RSX</string>
+    <string name="config_text_403" formatted="false">SPU</string>
+    <string name="config_text_404" formatted="false">PPU</string>
+    <string name="config_text_405" formatted="false">Japonés</string>
+    <string name="config_text_406" formatted="false">Inglés (EE. UU.)</string>
+    <string name="config_text_407" formatted="false">Inglés (Reino Unido)</string>
+    <string name="config_text_408" formatted="false">Inglés (EE. UU.)</string>
+    <string name="config_text_409" formatted="false">Inglés (Reino Unido)</string>
+    <string name="config_text_410" formatted="false">Francés</string>
+    <string name="config_text_411" formatted="false">Español</string>
+    <string name="config_text_412" formatted="false">Alemán</string>
+    <string name="config_text_413" formatted="false">Italiano</string>
+    <string name="config_text_414" formatted="false">Neerlandés</string>
+    <string name="config_text_415" formatted="false">Portugués (Portugal)</string>
+    <string name="config_text_416" formatted="false">Portugués (Brasil)</string>
+    <string name="config_text_417" formatted="false">Ruso</string>
+    <string name="config_text_418" formatted="false">Coreano</string>
+    <string name="config_text_419" formatted="false">Chino tradicional</string>
+    <string name="config_text_420" formatted="false">Chino simplificado</string>
+    <string name="config_text_421" formatted="false">Finés</string>
+    <string name="config_text_422" formatted="false">Sueco</string>
+    <string name="config_text_423" formatted="false">Danés</string>
+    <string name="config_text_424" formatted="false">Noruego</string>
+    <string name="config_text_425" formatted="false">Polaco</string>
+    <string name="config_text_426" formatted="false">Turco</string>
+    <string name="config_text_427" formatted="false">Portugués (Portugal)</string>
+    <string name="config_text_428" formatted="false">Portugués (Brasil)</string>
+    <string name="config_text_429" formatted="false">Desactivado</string>
+    <string name="config_text_430" formatted="false">Error grave</string>
+    <string name="config_text_431" formatted="false">Error</string>
+    <string name="config_text_432" formatted="false">Pendiente</string>
+    <string name="config_text_433" formatted="false">Pendiente</string>
+    <string name="config_text_434" formatted="false">Correcto</string>
+    <string name="config_text_435" formatted="false">Advertencias</string>
+    <string name="config_text_436" formatted="false">Información</string>
+    <string name="config_text_437" formatted="false">Traza</string>
+    <string name="config_text_438" formatted="false">Sin errores</string>
+    <string name="config_text_439" formatted="false">Error general</string>
+    <string name="config_text_440" formatted="false">No hay contenido que iniciar</string>
+    <string name="config_text_441" formatted="false">Ubicación del disco incorrecta</string>
+    <string name="config_text_442" formatted="false">Archivo o carpeta no válidos</string>
+    <string name="config_text_443" formatted="false">Carpeta BD-ROM no válida</string>
+    <string name="config_text_444" formatted="false">Error de instalación</string>
+    <string name="config_text_445" formatted="false">Error de descifrado</string>
+    <string name="config_text_446" formatted="false">Error al crear archivos</string>
+    <string name="config_text_447" formatted="false">Falta el firmware</string>
+    <string name="config_text_448" formatted="false">Tipo de disco no compatible</string>
+    <string name="config_text_449" formatted="false">Estado guardado dañado</string>
+    <string name="config_text_450" formatted="false">Versión de estado guardado no compatible</string>
+    <string name="config_text_451" formatted="false">La emulación sigue en ejecución</string>
+    <string name="config_text_452" formatted="false">El juego ya está añadido</string>
+    <string name="config_text_453" formatted="false">Operación no disponible en este momento</string>
+</resources>

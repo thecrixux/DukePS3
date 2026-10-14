@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ppu_startup_title">PPU startup</string>
+    <string name="ppu_profile_label">PPU compilation</string>
+    <string name="ppu_profile_current">Current</string>
+    <string name="ppu_profile_balanced">Balanced</string>
+    <string name="ppu_profile_experimental">Experimental</string>
+    <string name="ppu_profile_hint">Balanced allows up to 3 compilers; Experimental up to 4, subject to memory limits. More compilers can increase memory use and heat. Applies to startup compilation and requires restarting the game.</string>
+    <string name="ppu_priority_label">Keep startup priority</string>
+    <string name="ppu_priority_hint">Keeps the inherited thread priority during startup compilation. May reduce compilation time at the cost of responsiveness in other apps.</string>
+    <string name="ppu_diagnostics_label">PPU startup diagnostics</string>
+    <string name="ppu_diagnostics_hint">Records compilation times, cache use, process memory and thread priority in the emulator log.</string>
+    <string name="ppu_cache_label">PPU test cache</string>
+    <string name="ppu_cache_normal">Normal</string>
+    <string name="ppu_cache_hint">Normal uses the standard PPU cache. Slots 1–9 store independent caches for compilation measurements and use additional storage. Requires restarting the game.</string>
+</resources>

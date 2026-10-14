@@ -8,7 +8,6 @@
     <string name="framegen_engine_dis">DIS</string>
     <string name="framegen_engine_dis_detail">incluido en la app</string>
     <string name="framegen_engine_dis_note">Dense Inverse Search está incluido en la app. No necesita ninguna DLL. Su disponibilidad depende de la GPU y el driver.</string>
-    <string name="framegen_enable_blocked">Importa Lossless.dll o selecciona DIS</string>
     <string name="framegen_label_dis_scale">Resolución del movimiento</string>
     <string name="framegen_dis_preset_light">Ligero</string>
     <string name="framegen_dis_preset_fast">Rápido</string>

@@ -28,7 +28,7 @@
     <string name="percent_value">%1$d%%</string>
     <string name="version_prefix">v%1$s</string>
 
-    <string name="startup_message">Starting RPCS3</string>
+    <string name="startup_message">Starting DukePS3</string>
     <string name="unsupported_cpu">This build needs an ARMv8.2 CPU. This device is missing %1$s, so DukePS3 cannot run on it.</string>
     <string name="notification_channel_progress">Installation progress</string>
 
@@ -507,14 +507,14 @@
     <string name="framegen_section_manage">Shader DLL</string>
     <string name="framegen_label_multiplier">Multiplier</string>
     <string name="framegen_label_target">Target rate</string>
-    <string name="framegen_source_missing">No shader source imported yet. Pick your own copy of Lossless.dll to enable frame generation.</string>
+    <string name="framegen_source_missing">LSFG requires a compatible copy of Lossless.dll. DIS is included and does not require this file.</string>
     <string name="framegen_source_importing">Reading the shader chain out of the file…</string>
     <string name="framegen_source_loaded">Loaded — %1$d shaders (%2$s)</string>
     <string name="framegen_source_loaded_named">Loaded from %1$s — %2$d shaders (%3$s)</string>
     <string name="framegen_source_select">Import DLL</string>
     <string name="framegen_source_replace">Update DLL</string>
     <string name="framegen_source_remove">Remove</string>
-    <string name="framegen_source_hint">The shaders are translated once and cached. Pick the file again whenever you update Lossless Scaling.</string>
+    <string name="framegen_source_hint">Shaders are translated once and cached. Updating Lossless Scaling requires importing the file again.</string>
 
     <string name="framegen_import_title">Frame generation</string>
     <string name="framegen_import_ok">Shader chain imported. Frame generation is ready to enable.</string>
@@ -545,13 +545,13 @@
     <string name="framegen_preset_performance_short">Perf</string>
     <string name="framegen_preset_balanced_short">Balanced</string>
     <string name="framegen_preset_quality_short">Quality</string>
-    <string name="framegen_preset_ultra_performance_note" formatted="false">Motion estimated at 40% resolution. Around 40% of Quality\'s GPU cost. Fine detail softens during fast motion.</string>
-    <string name="framegen_preset_performance_note" formatted="false">Motion estimated at 50% resolution. Around 46% of Quality\'s GPU cost, with almost no visible loss.</string>
-    <string name="framegen_preset_balanced_note" formatted="false">Motion estimated at 70% resolution. Around 61% of Quality\'s GPU cost. Recommended for handhelds.</string>
-    <string name="framegen_preset_quality_note" formatted="false">Motion estimated at full resolution. Highest cost; use it only when the game has GPU headroom to spare.</string>
+    <string name="framegen_preset_ultra_performance_note" formatted="false">Estimates motion at 40% resolution. Reduces GPU load at the cost of detail in motion.</string>
+    <string name="framegen_preset_performance_note" formatted="false">Estimates motion at 50% resolution. Prioritizes performance.</string>
+    <string name="framegen_preset_balanced_note" formatted="false">Estimates motion at 70% resolution. Balances quality and GPU load.</string>
+    <string name="framegen_preset_quality_note" formatted="false">Estimates motion at full resolution. Requires more GPU headroom.</string>
     <string name="framegen_runtime_active_motion">Running at %1$d \u00d7 %2$d. The game outputs %3$d \u00d7 %4$d, so motion is searched at %5$d \u00d7 %6$d.</string>
     <string name="framegen_runtime_active">Running at %1$d × %2$d.</string>
     <string name="framegen_runtime_idle">Starts once a game is running.</string>
     <string name="framegen_runtime_unsupported">This GPU rejected the frame generation pipelines, so it stays off.</string>
-    <string name="framegen_latency_note">Interpolation always adds a little latency: the real frame is held back while the frames before it are shown. It buys smoothness, not response.</string>
+    <string name="framegen_latency_note">Interpolation can improve visual smoothness and adds latency when presenting intermediate frames. Results depend on the GPU, driver and game frame pacing.</string>
 </resources>

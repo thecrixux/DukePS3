@@ -66,7 +66,7 @@ fun <T> SingleSelectionDialog(
         leadingIcon = icon,
         enabled = enabled,
         subtitle = subtitle,
-        value = { PreferenceValue(text = currentValue.toString()) },
+        value = { PreferenceValue(text = currentValue?.let(valueToText).orEmpty()) },
         trailingContent = trailingContent,
         onLongClick = onLongClick,
         onClick = {

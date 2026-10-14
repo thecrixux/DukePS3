@@ -3,6 +3,7 @@
 
 #include "Crypto/unpkg.h"
 #include "Crypto/unself.h"
+#include "Crypto/aes_arm_support.hpp"
 #include "Emu/Audio/Cubeb/CubebBackend.h"
 #include "Emu/Audio/AndroidAudioDiagnostics.h"
 #include "Emu/Audio/Null/NullAudioBackend.h"
@@ -10,6 +11,7 @@
 #include "Emu/Cell/Modules/cellSysutil.h"
 #include "Emu/Cell/PPUAnalyser.h"
 #include "Emu/Cell/SPURecompiler.h"
+#include "Emu/Cell/PPUCompilePolicy.h"
 #include "Emu/Cell/lv2/sys_sync.h"
 #include "Emu/IdManager.h"
 #include "Emu/Io/KeyboardHandler.h"
@@ -391,11 +393,20 @@ static FileType getFileType(const fs::file &file) {
   return FileType::Unknown;
 }
 
-#define MAKE_STRING(id, x) [int(localized_string_id::id)] = {x, U##x}
+#include "ui_language.hpp"
 
-static std::pair<std::string, std::u32string> g_strings[] = {
-#include "localized_strings.inl"
-};
+template <std::size_t E, std::size_t S, typename... Args>
+static std::string ui_format(const char (&english)[E], const char (&spanish)[S], const Args&... args) {
+  return duke::ui::spanish.load(std::memory_order_relaxed)
+      ? fmt::format(spanish, args...) : fmt::format(english, args...);
+}
+
+extern "C" JNIEXPORT void JNICALL Java_net_rpcs3_RPCS3_setUiLanguage(
+    JNIEnv *env, jobject, jstring language) {
+  const auto value = unwrap(env, language);
+  duke::ui::spanish.store(value == "es", std::memory_order_relaxed);
+  rpcs3_android.notice("Duke UI localization: revision=20261014 language=%s", value);
+}
 
 enum GameFlags {
   kGameFlagLocked = 1 << 0,
@@ -429,7 +440,7 @@ public:
         max, message.empty() ? nullptr : wrap(env, message));
   }
 
-  void failure(const std::string &message = {}) { report(-1, 0, message); }
+  void failure(const std::string &message = {}) { report(-1, 0, duke::ui::text(message)); }
 
   void success(jlong value, const std::string &message = {}) {
     value = std::max<jlong>(value, 1);
@@ -1230,6 +1241,8 @@ private:
     emuOwned.store(true);
     AtExit releaseEmuOwnership{[this] { emuOwned.store(false); }};
 
+    duke::ppu::startup_scope ppu_startup;
+    const auto ppu_preparation_started = std::chrono::steady_clock::now();
     Emu.SetState(system_state::running);
 
     MessageDialog::pushPendingProgressId(workload.progressId);
@@ -1313,9 +1326,24 @@ private:
       ppu_precompile(dir_queue, mod_list.empty() ? nullptr : &mod_list, false);
     }
 
+    if (g_cfg.core.android_ppu_compile_diagnostics) {
+      rpcs3_android.notice("Duke PPU preparation: file=%s wall_ms=%llu profile=%d test_slot=%d aborted=%u",
+          workload.path, static_cast<u64>(std::chrono::duration_cast<std::chrono::milliseconds>(
+              std::chrono::steady_clock::now() - ppu_preparation_started).count()),
+          g_cfg.core.android_ppu_compile_profile.get(), g_cfg.core.android_ppu_test_cache_slot.get(),
+          Emu.IsStopped());
+    }
+    if (is_vsh) {
+      const bool cancelled = aborting || Emu.IsStopped();
+      rpcs3_android.always()("Duke firmware compilation: wall_ms=%llu cancelled=%u",
+          static_cast<u64>(std::chrono::duration_cast<std::chrono::milliseconds>(
+              std::chrono::steady_clock::now() - ppu_preparation_started).count()), cancelled);
+      if (!cancelled) sendFirmwareCompiled(env, utils::get_firmware_version());
+    }
     rpcs3_android.error("Finalization");
     g_fxo->reset();
     Emu.SetState(system_state::stopped);
+    ppu_startup.finish();
     emuLock.unlock();
 
     MessageDialog::popPendingProgressId(workload.progressId);
@@ -1519,35 +1547,11 @@ static void setupCallbacks() {
       .get_sendmessage_dialog = [](auto...) { return nullptr; },
       .get_recvmessage_dialog = [](auto...) { return nullptr; },
       .get_trophy_notification_dialog = [](auto...) { return nullptr; },
-      .get_localized_string = [](localized_string_id id,
-                                 const char *arg) -> std::string {
-        if (int(id) < 0 || usz(id) >= std::size(g_strings)) {
-          return "";
-        }
-
-        std::string result = g_strings[int(id)].first;
-
-        if (const auto pos = result.find("%0"); pos != std::string::npos) {
-          result.replace(pos, 2, arg ? arg : "");
-        }
-
-        return result;
+      .get_localized_string = [](localized_string_id id, const char *arg) -> std::string {
+        return duke::ui::localized(id, arg);
       },
-      .get_localized_u32string = [](localized_string_id id,
-                                    const char *arg) -> std::u32string {
-        if (int(id) < 0 || usz(id) >= std::size(g_strings)) {
-          return U"";
-        }
-
-        std::u32string result = g_strings[int(id)].second;
-
-        if (const auto pos = result.find(U"%0"); pos != std::u32string::npos) {
-          const std::string replacement = arg ? arg : "";
-          result.replace(pos, 2,
-                         std::u32string(replacement.begin(), replacement.end()));
-        }
-
-        return result;
+      .get_localized_u32string = [](localized_string_id id, const char *arg) -> std::u32string {
+        return duke::ui::localized32(id, arg);
       },
       .get_localized_setting = [](const cfg::_base *node,
                                   u32 index) -> std::string {
@@ -1558,7 +1562,7 @@ static void setupCallbacks() {
         const auto list = node->to_list();
 
         if (index < list.size()) {
-          return list[index];
+          return duke::ui::text(list[index]);
         }
 
         return {};
@@ -2238,10 +2242,27 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_rpcs3_RPCS3_usbDeviceEvent(
   return true;
 }
 
-static bool installPup(JNIEnv *env, fs::file &&pup_f, jlong progressId) {
+static bool installPup(JNIEnv *env, fs::file &&pup_f, jlong progressId, bool prepare_cache = true) {
   Progress progress(env, progressId);
 
+  const auto started = std::chrono::steady_clock::now();
+  const auto elapsed_ms = [](auto since) -> u64 {
+    return static_cast<u64>(std::chrono::duration_cast<std::chrono::milliseconds>(
+        std::chrono::steady_clock::now() - since).count());
+  };
+  u64 decrypt_ms = 0, decompress_ms = 0, extract_ms = 0;
+  u64 completed_packages = 0;
+  AtExit metrics{[&] {
+    rpcs3_android.always()("Duke firmware install: wall_ms=%llu decrypt_ms=%llu decompress_ms=%llu extract_ms=%llu packages=%llu prepare_cache=%u aes_arm=%u",
+        elapsed_ms(started), decrypt_ms, decompress_ms, extract_ms,
+        completed_packages, prepare_cache, duke::crypto::arm_aes_available());
+  }};
+  if (!progress.report(0, 0, duke::ui::text("Checking firmware integrity…"))) {
+    pup_f.release_handle(); // Borrowed Java descriptor must stay open for its owner.
+    return false;
+  }
   pup_object pup(std::move(pup_f));
+  rpcs3_android.always()("Duke firmware validation: wall_ms=%llu", elapsed_ms(started));
   AtExit atExit{[&] { pup.file().release_handle(); }};
 
   if (static_cast<pup_error>(pup) == pup_error::hash_mismatch) {
@@ -2300,6 +2321,7 @@ static bool installPup(JNIEnv *env, fs::file &&pup_f, jlong progressId) {
   }
 
   sendVshBootable(env, progressId);
+  if (!progress.report(0, update_filenames.size(), duke::ui::text("Extracting firmware…"))) return false;
 
   jlong processed = 0;
   for (const auto &update_filename : update_filenames) {
@@ -2314,11 +2336,15 @@ static bool installPup(JNIEnv *env, fs::file &&pup_f, jlong progressId) {
     fs::file update_file = fs::make_stream(std::move(update_file_stream->data));
 
     SCEDecrypter self_dec(update_file);
-    self_dec.LoadHeaders();
-    self_dec.LoadMetadata(SCEPKG_ERK, SCEPKG_RIV);
-    self_dec.DecryptData();
-
+    const auto decrypt_started = std::chrono::steady_clock::now();
+    if (!self_dec.LoadHeaders() || !self_dec.LoadMetadata(SCEPKG_ERK, SCEPKG_RIV) || !self_dec.DecryptData()) {
+      progress.failure("Firmware update file is broken");
+      return false;
+    }
+    decrypt_ms += elapsed_ms(decrypt_started);
+    const auto decompress_started = std::chrono::steady_clock::now();
     auto dev_flash_tar_f = self_dec.MakeFile();
+    decompress_ms += elapsed_ms(decompress_started);
 
     if (dev_flash_tar_f.size() < 3) {
       rpcs3_android.error(
@@ -2329,6 +2355,7 @@ static bool installPup(JNIEnv *env, fs::file &&pup_f, jlong progressId) {
     }
 
     tar_object dev_flash_tar(dev_flash_tar_f[2]);
+    const auto extract_started = std::chrono::steady_clock::now();
 
     if (!dev_flash_tar.extract()) {
 
@@ -2336,11 +2363,13 @@ static bool installPup(JNIEnv *env, fs::file &&pup_f, jlong progressId) {
                           "invalid. (package=%s)",
                           update_filename);
 
-      progress.failure(fmt::format("TAR contents are invalid (package=%s)",
+      progress.failure(ui_format("TAR contents are invalid (package=%s)", "Contenido TAR no válido (paquete=%s)",
                                    update_filename));
       return false;
     }
 
+    extract_ms += elapsed_ms(extract_started);
+    ++completed_packages;
     if (!progress.report(processed++, update_filenames.size())) {
       // Installation was cancelled
       return false;
@@ -2349,8 +2378,13 @@ static bool installPup(JNIEnv *env, fs::file &&pup_f, jlong progressId) {
 
   sendFirmwareInstalled(env, utils::get_firmware_version());
 
-  g_compilationQueue.push(progress,
-                          g_cfg_vfs.get_dev_flash() + "/vsh/module/vsh.self");
+  if (prepare_cache) {
+    if (!progress.report(0, 0, duke::ui::text("Preparing firmware modules…"))) return false;
+    g_compilationQueue.push(progress,
+                            g_cfg_vfs.get_dev_flash() + "/vsh/module/vsh.self");
+  } else {
+    progress.success(0, duke::ui::text("Firmware installed"));
+  }
   return true;
 }
 
@@ -2381,7 +2415,7 @@ static bool installPkgs(JNIEnv *env,
 
   for (std::size_t index = 0; index < readers.size(); index++) {
     if (!readers[index].is_valid()) {
-      progress.failure("Corrupted package: " + names[index]);
+      progress.failure(duke::ui::text("Corrupted package: ") + names[index]);
       return false;
     }
   }
@@ -2406,12 +2440,10 @@ static bool installPkgs(JNIEnv *env,
       if (result.error != package_install_result::error_type::no_error) {
         if (result.error == package_install_result::error_type::app_version) {
           progress.failure(
-              "Update cannot be installed on the current version. It expects "
-              "version " +
-              result.version.expected + ", but version " +
-              (result.version.installed.empty() ? std::string("none")
-                                                : result.version.installed) +
-              " is installed. Install the missing updates in order first.");
+              ui_format("Update requires version %s; version %s is installed. Missing updates must be installed in order.",
+                        "La actualización requiere la versión %s; está instalada la versión %s. Las actualizaciones pendientes deben instalarse en orden.",
+                        result.version.expected,
+                        result.version.installed.empty() ? duke::ui::text("none") : result.version.installed));
         } else {
           progress.failure("Installation failed");
         }
@@ -2491,8 +2523,7 @@ static bool installEdat(JNIEnv *env, fs::file &&file, jlong progressId,
     auto contentId = psf::get_string(psf, "CONTENT_ID");
 
     if (contentId != npdHeader.content_id) {
-      progress.failure(fmt::format("File cannot be used for this game. EDAT "
-                                   "content ID missmatch %s vs %s",
+      progress.failure(ui_format("File cannot be used for this game. EDAT content ID missmatch %s vs %s", "El archivo no es válido para este juego. ID de contenido EDAT distinto: %s frente a %s",
                                    contentId, npdHeader.content_id));
       return false;
     }
@@ -2512,7 +2543,7 @@ static bool installEdat(JNIEnv *env, fs::file &&file, jlong progressId,
 
   if (!fs::write_file(licenseFile, fs::open_mode::create + fs::open_mode::trunc,
                       bytes)) {
-    progress.failure(fmt::format("Failed to write EDAT to %s", licenseFile));
+    progress.failure(ui_format("Failed to write EDAT to %s", "No se ha podido escribir EDAT en %s", licenseFile));
     return false;
   }
 
@@ -2560,7 +2591,7 @@ static bool installRap(JNIEnv *env, fs::file &&file, jlong progressId,
 
   if (!fs::write_file(licenseFile, fs::open_mode::create + fs::open_mode::trunc,
                       bytes)) {
-    progress.failure(fmt::format("Failed to write key to %s", licenseFile));
+    progress.failure(ui_format("Failed to write key to %s", "No se ha podido escribir la clave en %s", licenseFile));
     return false;
   }
 
@@ -2604,7 +2635,7 @@ static bool installRapInExData(JNIEnv *env, fs::file &&file, jlong progressId,
                                      rpcs3::utils::get_hdd0_dir(), Emu.GetUsr());
 
   if (!fs::create_path(exdataDir) && !fs::is_dir(exdataDir)) {
-    progress.failure(fmt::format("Failed to create %s", exdataDir));
+    progress.failure(ui_format("Failed to create %s", "No se ha podido crear %s", exdataDir));
     return false;
   }
 
@@ -2613,14 +2644,14 @@ static bool installRapInExData(JNIEnv *env, fs::file &&file, jlong progressId,
   fs::pending_file pending(licenseFile);
 
   if (!pending.file) {
-    progress.failure(fmt::format("Failed to write key to %s", licenseFile));
+    progress.failure(ui_format("Failed to write key to %s", "No se ha podido escribir la clave en %s", licenseFile));
     return false;
   }
 
   pending.file.write(bytes);
 
   if (!pending.commit()) {
-    progress.failure(fmt::format("Failed to write key to %s", licenseFile));
+    progress.failure(ui_format("Failed to write key to %s", "No se ha podido escribir la clave en %s", licenseFile));
     return false;
   }
 
@@ -2701,7 +2732,7 @@ static bool installIso(JNIEnv *env, fs::file &&file, jlong progressId) {
 
     std::filesystem::create_directories(rootDestPath, ec);
     if (ec) {
-      progress.failure(fmt::format("Failed to create dir %s: %s",
+      progress.failure(ui_format("Failed to create dir %s: %s", "No se ha podido crear la carpeta %s: %s",
                                    rootDestPath.string(), ec.message()));
       return false;
     }
@@ -2716,7 +2747,7 @@ static bool installIso(JNIEnv *env, fs::file &&file, jlong progressId) {
       if (entry.is_directory) {
         std::filesystem::create_directories(entryDestPath, ec);
         if (ec) {
-          progress.failure(fmt::format("Failed to create dir %s: %s",
+          progress.failure(ui_format("Failed to create dir %s: %s", "No se ha podido crear la carpeta %s: %s",
                                        entryDestPath.string(), ec.message()));
           return false;
         }
@@ -2724,7 +2755,7 @@ static bool installIso(JNIEnv *env, fs::file &&file, jlong progressId) {
         continue;
       }
       if (!iso.extract(root / entry.name, entryDestPath.string())) {
-        progress.failure(fmt::format("Failed to extract file: %s, dest %s",
+        progress.failure(ui_format("Failed to extract file: %s, dest %s", "No se ha podido extraer el archivo %s en %s",
                                      (root / entry.name).string(),
                                      entryDestPath.string()));
         return false;
@@ -2741,8 +2772,8 @@ static bool installIso(JNIEnv *env, fs::file &&file, jlong progressId) {
 }
 
 extern "C" JNIEXPORT jboolean JNICALL Java_net_rpcs3_RPCS3_installFw(
-    JNIEnv *env, jobject, jint fd, jlong progressId) {
-  return installPup(env, fs::file::from_native_handle(fd), progressId);
+    JNIEnv *env, jobject, jint fd, jlong progressId, jboolean prepareCache) {
+  return installPup(env, fs::file::from_native_handle(fd), progressId, prepareCache == JNI_TRUE);
 }
 
 extern "C" JNIEXPORT jboolean JNICALL

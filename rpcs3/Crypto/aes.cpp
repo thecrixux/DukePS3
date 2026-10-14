@@ -31,6 +31,7 @@
 
 #include "aes.h"
 #include "aesni.h"
+#include "aes_arm.hpp"
 
 #include <algorithm>
 
@@ -668,6 +669,11 @@ int aes_crypt_ecb( aes_context *ctx,
 #if defined(__SSE2__) || defined(_M_X64)
     if( aesni_supports( POLARSSL_AESNI_AES ) )
         return( aesni_crypt_ecb( ctx, mode, input, output ) );
+#endif
+
+#if defined(__aarch64__) && defined(__linux__) && !defined(__AARCH64EB__)
+    if( duke::crypto::arm_aes_available() )
+        return duke::crypto::arm_aes_ecb( ctx, mode, input, output );
 #endif
 
     RK = ctx->rk;

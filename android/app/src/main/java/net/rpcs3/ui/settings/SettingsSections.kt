@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import net.rpcs3.ui.components.CollapsibleSection
 import net.rpcs3.ui.components.SectionLabel
 import net.rpcs3.ui.components.SettingGroup
@@ -80,7 +81,7 @@ internal fun SettingsCategoryContent(
         }
 
         branches.forEach { (key, child) ->
-            CollapsibleSection(title = key) {
+            CollapsibleSection(title = ConfigText.label(LocalContext.current, key)) {
                 SettingsSubtreeContent(
                     node = child,
                     path = "$path@@$key",
@@ -112,7 +113,7 @@ private fun SettingsSubtreeContent(
     }
 
     branches.forEach { (key, child) ->
-        SectionLabel(text = key.uppercase())
+        SectionLabel(text = ConfigText.label(LocalContext.current, key).uppercase())
         SettingsSubtreeContent(
             node = child,
             path = "$path@@$key",

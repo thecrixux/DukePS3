@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="config_text_000" formatted="false">Core</string>
+    <string name="config_text_001" formatted="false">PPU Decoder</string>
+    <string name="config_text_002" formatted="false">PPU Threads</string>
+    <string name="config_text_003" formatted="false">PPU Debug</string>
+    <string name="config_text_004" formatted="false">PPU Calling History</string>
+    <string name="config_text_005" formatted="false">Save LLVM logs</string>
+    <string name="config_text_006" formatted="false">Use LLVM CPU</string>
+    <string name="config_text_007" formatted="false">Max LLVM Compile Threads</string>
+    <string name="config_text_008" formatted="false">LLVM Precompilation</string>
+    <string name="config_text_009" formatted="false">Android PPU Compile Profile</string>
+    <string name="config_text_010" formatted="false">Android PPU Normal Startup Priority</string>
+    <string name="config_text_011" formatted="false">Android PPU Compile Diagnostics</string>
+    <string name="config_text_012" formatted="false">Android PPU Test Cache Slot</string>
+    <string name="config_text_013" formatted="false">Thread Scheduler Mode</string>
+    <string name="config_text_014" formatted="false">Set DAZ and FTZ</string>
+    <string name="config_text_015" formatted="false">SPU Decoder</string>
+    <string name="config_text_016" formatted="false">SPU Reservation Busy Waiting Percentage 1</string>
+    <string name="config_text_017" formatted="false">SPU Reservation Busy Waiting Enabled</string>
+    <string name="config_text_018" formatted="false">SPU GETLLAR Busy Waiting Percentage</string>
+    <string name="config_text_019" formatted="false">Disable SPU GETLLAR Spin Optimization</string>
+    <string name="config_text_020" formatted="false">SPU Debug</string>
+    <string name="config_text_021" formatted="false">MFC Debug</string>
+    <string name="config_text_022" formatted="false">Preferred SPU Threads</string>
+    <string name="config_text_023" formatted="false">SPU delay penalty</string>
+    <string name="config_text_024" formatted="false">SPU loop detection</string>
+    <string name="config_text_025" formatted="false">Max SPURS Threads</string>
+    <string name="config_text_026" formatted="false">SPU Block Size</string>
+    <string name="config_text_027" formatted="false">Accurate SPU DMA</string>
+    <string name="config_text_028" formatted="false">Accurate SPU Reservations</string>
+    <string name="config_text_029" formatted="false">Accurate Cache Line Stores</string>
+    <string name="config_text_030" formatted="false">Accurate RSX reservation access</string>
+    <string name="config_text_031" formatted="false">PPU Reservation Priority Over SPUs</string>
+    <string name="config_text_032" formatted="false">Affinity</string>
+    <string name="config_text_033" formatted="false">CPU0</string>
+    <string name="config_text_034" formatted="false">CPU1</string>
+    <string name="config_text_035" formatted="false">CPU2</string>
+    <string name="config_text_036" formatted="false">CPU3</string>
+    <string name="config_text_037" formatted="false">CPU4</string>
+    <string name="config_text_038" formatted="false">CPU5</string>
+    <string name="config_text_039" formatted="false">CPU6</string>
+    <string name="config_text_040" formatted="false">CPU7</string>
+    <string name="config_text_041" formatted="false">RSX FIFO Fetch Accuracy</string>
+    <string name="config_text_042" formatted="false">SPU Verification</string>
+    <string name="config_text_043" formatted="false">SPU Cache</string>
+    <string name="config_text_044" formatted="false">SPU Profiler</string>
+    <string name="config_text_045" formatted="false">PPU Profiler</string>
+    <string name="config_text_046" formatted="false">MFC Commands Shuffling Limit</string>
+    <string name="config_text_047" formatted="false">MFC Commands Timeout</string>
+    <string name="config_text_048" formatted="false">MFC Commands Shuffling In Steps</string>
+    <string name="config_text_049" formatted="false">SPU XFloat Accuracy</string>
+    <string name="config_text_050" formatted="false">Accurate PPU 128-byte Reservation Op Max Length</string>
+    <string name="config_text_051" formatted="false">Stub PPU Traps</string>
+    <string name="config_text_052" formatted="false">Precise SPU Verification</string>
+    <string name="config_text_053" formatted="false">PPU Vector NaN Handling</string>
+    <string name="config_text_054" formatted="false">Use Accurate DFMA</string>
+    <string name="config_text_055" formatted="false">PPU Set Saturation Bit</string>
+    <string name="config_text_056" formatted="false">PPU Accurate Non-Java Mode</string>
+    <string name="config_text_057" formatted="false">PPU Accurate Vector NaN Values</string>
+    <string name="config_text_058" formatted="false">PPU Set FPCC Bits</string>
+    <string name="config_text_059" formatted="false">Debug Console Mode</string>
+    <string name="config_text_060" formatted="false">Hook static functions</string>
+    <string name="config_text_061" formatted="false">Libraries Control</string>
+    <string name="config_text_062" formatted="false">HLE lwmutex</string>
+    <string name="config_text_063" formatted="false">SPU LLVM Lower Bound</string>
+    <string name="config_text_064" formatted="false">SPU LLVM Upper Bound</string>
+    <string name="config_text_065" formatted="false">Clocks scale</string>
+    <string name="config_text_066" formatted="false">SPU Wake-Up Delay</string>
+    <string name="config_text_067" formatted="false">SPU Wake-Up Delay Thread Mask</string>
+    <string name="config_text_068" formatted="false">Max CPU Preempt Count</string>
+    <string name="config_text_069" formatted="false">Allow RSX CPU Preemptions</string>
+    <string name="config_text_070" formatted="false">Sleep Timers Accuracy</string>
+    <string name="config_text_071" formatted="false">Usleep Time Addend</string>
+    <string name="config_text_072" formatted="false">Performance Report Threshold</string>
+    <string name="config_text_073" formatted="false">Enable Performance Report</string>
+    <string name="config_text_074" formatted="false">Assume External Debugger</string>
+    <string name="config_text_075" formatted="false">VFS</string>
+    <string name="config_text_076" formatted="false">Enable /host_root/</string>
+    <string name="config_text_077" formatted="false">Initialize Directories</string>
+    <string name="config_text_078" formatted="false">Limit disk cache size</string>
+    <string name="config_text_079" formatted="false">Disk cache maximum size (MB)</string>
+    <string name="config_text_080" formatted="false">Empty /dev_hdd0/tmp/</string>
+    <string name="config_text_081" formatted="false">Emulate HDD Read Speed</string>
+    <string name="config_text_082" formatted="false">Emulate BD-ROM Read Speed</string>
+    <string name="config_text_083" formatted="false">Video</string>
+    <string name="config_text_084" formatted="false">Renderer</string>
+    <string name="config_text_085" formatted="false">Resolution</string>
+    <string name="config_text_086" formatted="false">Aspect ratio</string>
+    <string name="config_text_087" formatted="false">Frame limit</string>
+    <string name="config_text_088" formatted="false">Second Frame Limit</string>
+    <string name="config_text_089" formatted="false">MSAA</string>
+    <string name="config_text_090" formatted="false">Shader Mode</string>
+    <string name="config_text_091" formatted="false">Shader Precision</string>
+    <string name="config_text_092" formatted="false">VSync Mode</string>
+    <string name="config_text_093" formatted="false">Write Color Buffers</string>
+    <string name="config_text_094" formatted="false">Write Depth Buffer</string>
+    <string name="config_text_095" formatted="false">Read Color Buffers</string>
+    <string name="config_text_096" formatted="false">Read Depth Buffer</string>
+    <string name="config_text_097" formatted="false">Handle RSX Memory Tiling</string>
+    <string name="config_text_098" formatted="false">Log shader programs</string>
+    <string name="config_text_099" formatted="false">Debug output</string>
+    <string name="config_text_100" formatted="false">Debug overlay</string>
+    <string name="config_text_101" formatted="false">Renderdoc Compatibility Mode</string>
+    <string name="config_text_102" formatted="false">Use GPU texture scaling</string>
+    <string name="config_text_103" formatted="false">Stretch To Display Area</string>
+    <string name="config_text_104" formatted="false">Force High Precision Z buffer</string>
+    <string name="config_text_105" formatted="false">Strict Rendering Mode</string>
+    <string name="config_text_106" formatted="false">Framebuffer Aliasing Heuristic Bias</string>
+    <string name="config_text_107" formatted="false">Disable ZCull Occlusion Queries</string>
+    <string name="config_text_108" formatted="false">Disable Video Output</string>
+    <string name="config_text_109" formatted="false">Disable Vertex Cache</string>
+    <string name="config_text_110" formatted="false">Disable FIFO Reordering</string>
+    <string name="config_text_111" formatted="false">Emulate Special Depth Comparison</string>
+    <string name="config_text_112" formatted="false">Enable Frame Skip</string>
+    <string name="config_text_113" formatted="false">Force CPU Blit</string>
+    <string name="config_text_114" formatted="false">Disable On-Disk Shader Cache</string>
+    <string name="config_text_115" formatted="false">Disable Vulkan Memory Allocator</string>
+    <string name="config_text_116" formatted="false">Use full RGB output range</string>
+    <string name="config_text_117" formatted="false">Strict Texture Flushing</string>
+    <string name="config_text_118" formatted="false">Multithreaded RSX</string>
+    <string name="config_text_119" formatted="false">Relaxed ZCULL Sync</string>
+    <string name="config_text_120" formatted="false">Force Hardware MSAA Resolve</string>
+    <string name="config_text_121" formatted="false">3D Display Enabled</string>
+    <string name="config_text_122" formatted="false">3D Display Mode</string>
+    <string name="config_text_123" formatted="false">Screen size in inches</string>
+    <string name="config_text_124" formatted="false">Debug Program Analyser</string>
+    <string name="config_text_125" formatted="false">Accurate ZCULL stats</string>
+    <string name="config_text_126" formatted="false">Consecutive Frames To Draw</string>
+    <string name="config_text_127" formatted="false">Consecutive Frames To Skip</string>
+    <string name="config_text_128" formatted="false">Resolution Scale</string>
+    <string name="config_text_129" formatted="false">Anisotropic Filter Override</string>
+    <string name="config_text_130" formatted="false">Texture LOD Bias Addend</string>
+    <string name="config_text_131" formatted="false">Minimum Scalable Dimension</string>
+    <string name="config_text_132" formatted="false">Shader Compiler Threads</string>
+    <string name="config_text_133" formatted="false">Driver Recovery Timeout</string>
+    <string name="config_text_134" formatted="false">Driver Wake-Up Delay</string>
+    <string name="config_text_135" formatted="false">Vblank Rate</string>
+    <string name="config_text_136" formatted="false">Vblank NTSC Fixup</string>
+    <string name="config_text_137" formatted="false">DECR memory layout</string>
+    <string name="config_text_138" formatted="false">Allow Host GPU Labels</string>
+    <string name="config_text_139" formatted="false">Disable MSL Fast Math</string>
+    <string name="config_text_140" formatted="false">Disable Asynchronous Memory Manager</string>
+    <string name="config_text_141" formatted="false">Output Scaling Mode</string>
+    <string name="config_text_142" formatted="false">Record With Overlays</string>
+    <string name="config_text_143" formatted="false">Disable Hardware Blending</string>
+    <string name="config_text_144" formatted="false">Disable Hardware ColorSpace Remapping</string>
+    <string name="config_text_145" formatted="false">FidelityFX CAS Sharpening Intensity</string>
+    <string name="config_text_146" formatted="false">Disable Blit Engine Upscaling</string>
+    <string name="config_text_147" formatted="false">Vulkan</string>
+    <string name="config_text_148" formatted="false">Adapter</string>
+    <string name="config_text_149" formatted="false">Exclusive Fullscreen Mode</string>
+    <string name="config_text_150" formatted="false">Asynchronous Texture Streaming</string>
+    <string name="config_text_151" formatted="false">Asynchronous Queue Scheduler</string>
+    <string name="config_text_152" formatted="false">VRAM allocation limit (MB)</string>
+    <string name="config_text_153" formatted="false">Use Re-BAR for GPU uploads</string>
+    <string name="config_text_154" formatted="false">Custom Driver</string>
+    <string name="config_text_155" formatted="false">Path</string>
+    <string name="config_text_156" formatted="false">Internal Data Directory</string>
+    <string name="config_text_157" formatted="false">Hook Directory</string>
+    <string name="config_text_158" formatted="false">Turbo Mode</string>
+    <string name="config_text_159" formatted="false">Workarounds</string>
+    <string name="config_text_160" formatted="false">No Primitive Restart</string>
+    <string name="config_text_161" formatted="false">Sanitize FP Values</string>
+    <string name="config_text_162" formatted="false">Disable Fence Reset</string>
+    <string name="config_text_163" formatted="false">Emulate Cond Render</string>
+    <string name="config_text_164" formatted="false">Strict Query Scopes</string>
+    <string name="config_text_165" formatted="false">Force Reuse Query Pools</string>
+    <string name="config_text_166" formatted="false">Performance Overlay</string>
+    <string name="config_text_167" formatted="false">Enabled</string>
+    <string name="config_text_168" formatted="false">Enable Framerate Graph</string>
+    <string name="config_text_169" formatted="false">Enable Frametime Graph</string>
+    <string name="config_text_170" formatted="false">Framerate datapoints</string>
+    <string name="config_text_171" formatted="false">Frametime datapoints</string>
+    <string name="config_text_172" formatted="false">Detail level</string>
+    <string name="config_text_173" formatted="false">Framerate graph detail level</string>
+    <string name="config_text_174" formatted="false">Frametime graph detail level</string>
+    <string name="config_text_175" formatted="false">Metrics update interval (ms)</string>
+    <string name="config_text_176" formatted="false">Font size (px)</string>
+    <string name="config_text_177" formatted="false">Position</string>
+    <string name="config_text_178" formatted="false">Font</string>
+    <string name="config_text_179" formatted="false">Horizontal Margin (%)</string>
+    <string name="config_text_180" formatted="false">Vertical Margin (%)</string>
+    <string name="config_text_181" formatted="false">Center Horizontally</string>
+    <string name="config_text_182" formatted="false">Center Vertically</string>
+    <string name="config_text_183" formatted="false">Opacity (%)</string>
+    <string name="config_text_184" formatted="false">Body Color (hex)</string>
+    <string name="config_text_185" formatted="false">Body Background (hex)</string>
+    <string name="config_text_186" formatted="false">Title Color (hex)</string>
+    <string name="config_text_187" formatted="false">Title Background (hex)</string>
+    <string name="config_text_188" formatted="false">Use Window Space</string>
+    <string name="config_text_189" formatted="false">Native UI</string>
+    <string name="config_text_190" formatted="false">Default Font</string>
+    <string name="config_text_191" formatted="false">Shader Loading Dialog</string>
+    <string name="config_text_192" formatted="false">Allow custom background</string>
+    <string name="config_text_193" formatted="false">Darkening effect strength</string>
+    <string name="config_text_194" formatted="false">Blur effect strength</string>
+    <string name="config_text_195" formatted="false">Custom Anaglyph Matrices</string>
+    <string name="config_text_196" formatted="false">Matrix Left</string>
+    <string name="config_text_197" formatted="false">Matrix Right</string>
+    <string name="config_text_198" formatted="false">Audio</string>
+    <string name="config_text_199" formatted="false">Audio Provider</string>
+    <string name="config_text_200" formatted="false">RSXAudio Avport</string>
+    <string name="config_text_201" formatted="false">Dump to file</string>
+    <string name="config_text_202" formatted="false">Convert to 16 bit</string>
+    <string name="config_text_203" formatted="false">Audio Format</string>
+    <string name="config_text_204" formatted="false">Audio Formats</string>
+    <string name="config_text_205" formatted="false">Audio Channel Layout</string>
+    <string name="config_text_206" formatted="false">Audio Device</string>
+    <string name="config_text_207" formatted="false">Android Audio Backend</string>
+    <string name="config_text_208" formatted="false">Master Volume</string>
+    <string name="config_text_209" formatted="false">Enable Buffering</string>
+    <string name="config_text_210" formatted="false">Desired Audio Buffer Duration</string>
+    <string name="config_text_211" formatted="false">Enable Time Stretching</string>
+    <string name="config_text_212" formatted="false">Disable Sampling Skip</string>
+    <string name="config_text_213" formatted="false">Time Stretching Threshold</string>
+    <string name="config_text_214" formatted="false">Microphone Type</string>
+    <string name="config_text_215" formatted="false">Microphone Devices</string>
+    <string name="config_text_216" formatted="false">Music Handler</string>
+    <string name="config_text_217" formatted="false">Input/Output</string>
+    <string name="config_text_218" formatted="false">Keyboard</string>
+    <string name="config_text_219" formatted="false">Mouse</string>
+    <string name="config_text_220" formatted="false">Camera</string>
+    <string name="config_text_221" formatted="false">Camera type</string>
+    <string name="config_text_222" formatted="false">Camera flip</string>
+    <string name="config_text_223" formatted="false">Camera ID</string>
+    <string name="config_text_224" formatted="false">SDL Camera ID</string>
+    <string name="config_text_225" formatted="false">Move</string>
+    <string name="config_text_226" formatted="false">Buzz emulated controller</string>
+    <string name="config_text_227" formatted="false">Turntable emulated controller</string>
+    <string name="config_text_228" formatted="false">GHLtar emulated controller</string>
+    <string name="config_text_229" formatted="false">Pad handler mode</string>
+    <string name="config_text_230" formatted="false">Keep pads connected</string>
+    <string name="config_text_231" formatted="false">Pad handler sleep (microseconds)</string>
+    <string name="config_text_232" formatted="false">Background input enabled</string>
+    <string name="config_text_233" formatted="false">Show move cursor</string>
+    <string name="config_text_234" formatted="false">Paint move spheres</string>
+    <string name="config_text_235" formatted="false">Allow move hue set by game</string>
+    <string name="config_text_236" formatted="false">Lock overlay input to player one</string>
+    <string name="config_text_237" formatted="false">Emulated Midi devices</string>
+    <string name="config_text_238" formatted="false">Load SDL GameController Mappings</string>
+    <string name="config_text_239" formatted="false">Mouse-based gyro enabled</string>
+    <string name="config_text_240" formatted="false">IO Debug overlay</string>
+    <string name="config_text_241" formatted="false">Mouse Debug overlay</string>
+    <string name="config_text_242" formatted="false">Fake Move Rotation Cone</string>
+    <string name="config_text_243" formatted="false">Fake Move Rotation Cone (Vertical)</string>
+    <string name="config_text_244" formatted="false">USIO handler mode</string>
+    <string name="config_text_245" formatted="false">System</string>
+    <string name="config_text_246" formatted="false">License Area</string>
+    <string name="config_text_247" formatted="false">Language</string>
+    <string name="config_text_248" formatted="false">Keyboard Type</string>
+    <string name="config_text_249" formatted="false">Enter button assignment</string>
+    <string name="config_text_250" formatted="false">Date Format</string>
+    <string name="config_text_251" formatted="false">Time Format</string>
+    <string name="config_text_252" formatted="false">Console time offset (s)</string>
+    <string name="config_text_253" formatted="false">System Name</string>
+    <string name="config_text_254" formatted="false">Console PSID</string>
+    <string name="config_text_255" formatted="false">HDD Model Name</string>
+    <string name="config_text_256" formatted="false">HDD Serial Number</string>
+    <string name="config_text_257" formatted="false">Process ARGV</string>
+    <string name="config_text_258" formatted="false">Net</string>
+    <string name="config_text_259" formatted="false">Internet enabled</string>
+    <string name="config_text_260" formatted="false">IP address</string>
+    <string name="config_text_261" formatted="false">Bind address</string>
+    <string name="config_text_262" formatted="false">DNS address</string>
+    <string name="config_text_263" formatted="false">IP swap list</string>
+    <string name="config_text_264" formatted="false">UPNP Enabled</string>
+    <string name="config_text_265" formatted="false">Derive MAC from PSID</string>
+    <string name="config_text_266" formatted="false">PSN status</string>
+    <string name="config_text_267" formatted="false">PSN Country</string>
+    <string name="config_text_268" formatted="false">Clans Enabled</string>
+    <string name="config_text_269" formatted="false">Savestate</string>
+    <string name="config_text_270" formatted="false">Start Paused</string>
+    <string name="config_text_271" formatted="false">Suspend Emulation Savestate Mode</string>
+    <string name="config_text_272" formatted="false">Compatible Savestate Mode</string>
+    <string name="config_text_273" formatted="false">Inspection Mode Savestates</string>
+    <string name="config_text_274" formatted="false">Save Disc Game Data</string>
+    <string name="config_text_275" formatted="false">Maximum SaveState Files</string>
+    <string name="config_text_276" formatted="false">Maximum SaveState Files Space (MiB)</string>
+    <string name="config_text_277" formatted="false">Miscellaneous</string>
+    <string name="config_text_278" formatted="false">Automatically start games after boot</string>
+    <string name="config_text_279" formatted="false">Exit RPCS3 when process finishes</string>
+    <string name="config_text_280" formatted="false">Pause emulation on RPCS3 focus loss</string>
+    <string name="config_text_281" formatted="false">Start games in fullscreen mode</string>
+    <string name="config_text_282" formatted="false">Start Big Picture Mode on boot</string>
+    <string name="config_text_283" formatted="false">Prevent display sleep while running games</string>
+    <string name="config_text_284" formatted="false">Show trophy popups</string>
+    <string name="config_text_285" formatted="false">Show RPCN popups</string>
+    <string name="config_text_286" formatted="false">Show shader compilation hint</string>
+    <string name="config_text_287" formatted="false">Show PPU compilation hint</string>
+    <string name="config_text_288" formatted="false">Show autosave/autoload hint</string>
+    <string name="config_text_289" formatted="false">Show pressure intensity toggle hint</string>
+    <string name="config_text_290" formatted="false">Show analog limiter toggle hint</string>
+    <string name="config_text_291" formatted="false">Show mouse and keyboard toggle hint</string>
+    <string name="config_text_292" formatted="false">Show fatal error hints</string>
+    <string name="config_text_293" formatted="false">Show capture hints</string>
+    <string name="config_text_294" formatted="false">Use native user interface</string>
+    <string name="config_text_295" formatted="false">Use recursive scan</string>
+    <string name="config_text_296" formatted="false">GDB Server</string>
+    <string name="config_text_297" formatted="false">Silence All Logs</string>
+    <string name="config_text_298" formatted="false">Window Title Format</string>
+    <string name="config_text_299" formatted="false">Pause Emulation During Home Menu</string>
+    <string name="config_text_300" formatted="false">Play music during boot sequence</string>
+    <string name="config_text_301" formatted="false">Enable GameMode</string>
+    <string name="config_text_302" formatted="false">Log</string>
+    <string name="config_text_303" formatted="false">Null</string>
+    <string name="config_text_304" formatted="false">Basic</string>
+    <string name="config_text_305" formatted="false">Raw</string>
+    <string name="config_text_306" formatted="false">Disabled</string>
+    <string name="config_text_307" formatted="false">Auto</string>
+    <string name="config_text_308" formatted="false">Prefer Color</string>
+    <string name="config_text_309" formatted="false">Prefer Depth</string>
+    <string name="config_text_310" formatted="false">Automatic</string>
+    <string name="config_text_311" formatted="false">Mono</string>
+    <string name="config_text_312" formatted="false">Stereo</string>
+    <string name="config_text_313" formatted="false">Stereo LFE</string>
+    <string name="config_text_314" formatted="false">Quadraphonic</string>
+    <string name="config_text_315" formatted="false">Quadraphonic LFE</string>
+    <string name="config_text_316" formatted="false">Surround 5.1</string>
+    <string name="config_text_317" formatted="false">Surround 7.1</string>
+    <string name="config_text_318" formatted="false">None</string>
+    <string name="config_text_319" formatted="false">Minimal</string>
+    <string name="config_text_320" formatted="false">Low</string>
+    <string name="config_text_321" formatted="false">Medium</string>
+    <string name="config_text_322" formatted="false">High</string>
+    <string name="config_text_323" formatted="false">Show min and max</string>
+    <string name="config_text_324" formatted="false">Show 1% and average</string>
+    <string name="config_text_325" formatted="false">All</string>
+    <string name="config_text_326" formatted="false">Top Left</string>
+    <string name="config_text_327" formatted="false">Top Right</string>
+    <string name="config_text_328" formatted="false">Bottom Left</string>
+    <string name="config_text_329" formatted="false">Bottom Right</string>
+    <string name="config_text_330" formatted="false">Fast</string>
+    <string name="config_text_331" formatted="false">Atomic</string>
+    <string name="config_text_332" formatted="false">Ordered &amp; Atomic</string>
+    <string name="config_text_333" formatted="false">As Host</string>
+    <string name="config_text_334" formatted="false">Usleep Only</string>
+    <string name="config_text_335" formatted="false">All Timers</string>
+    <string name="config_text_336" formatted="false">Enter with circle</string>
+    <string name="config_text_337" formatted="false">Enter with cross</string>
+    <string name="config_text_338" formatted="false">Disconnected</string>
+    <string name="config_text_339" formatted="false">Connected</string>
+    <string name="config_text_340" formatted="false">Simulated</string>
+    <string name="config_text_341" formatted="false">Interpreter (static)</string>
+    <string name="config_text_342" formatted="false">Interpreter (dynamic)</string>
+    <string name="config_text_343" formatted="false">Recompiler (ASMJIT)</string>
+    <string name="config_text_344" formatted="false">Recompiler (LLVM)</string>
+    <string name="config_text_345" formatted="false">Safe</string>
+    <string name="config_text_346" formatted="false">Off</string>
+    <string name="config_text_347" formatted="false">Display</string>
+    <string name="config_text_348" formatted="false">PS3 Native</string>
+    <string name="config_text_349" formatted="false">Infinite</string>
+    <string name="config_text_350" formatted="false">Standard</string>
+    <string name="config_text_351" formatted="false">Real SingStar</string>
+    <string name="config_text_352" formatted="false">Fake</string>
+    <string name="config_text_353" formatted="false">Unknown</string>
+    <string name="config_text_354" formatted="false">Horizontal</string>
+    <string name="config_text_355" formatted="false">Vertical</string>
+    <string name="config_text_356" formatted="false">Both</string>
+    <string name="config_text_357" formatted="false">Real</string>
+    <string name="config_text_358" formatted="false">Raw Mouse</string>
+    <string name="config_text_359" formatted="false">Gun</string>
+    <string name="config_text_360" formatted="false">Single-threaded</string>
+    <string name="config_text_361" formatted="false">Multi-threaded</string>
+    <string name="config_text_362" formatted="false">1 controller</string>
+    <string name="config_text_363" formatted="false">2 controllers</string>
+    <string name="config_text_364" formatted="false">Fighting Games</string>
+    <string name="config_text_365" formatted="false">Shooter Games</string>
+    <string name="config_text_366" formatted="false">Legacy Recompiler (single-threaded)</string>
+    <string name="config_text_367" formatted="false">Async Recompiler (multi-threaded)</string>
+    <string name="config_text_368" formatted="false">Async Recompiler with Shader Interpreter</string>
+    <string name="config_text_369" formatted="false">Shader Interpreter only</string>
+    <string name="config_text_370" formatted="false">AV multiout</string>
+    <string name="config_text_371" formatted="false">Manual</string>
+    <string name="config_text_372" formatted="false">RPCS3 Scheduler</string>
+    <string name="config_text_373" formatted="false">RPCS3 Alternative Scheduler</string>
+    <string name="config_text_374" formatted="false">Operating System</string>
+    <string name="config_text_375" formatted="false">Ultra</string>
+    <string name="config_text_376" formatted="false">Disable</string>
+    <string name="config_text_377" formatted="false">Enable</string>
+    <string name="config_text_378" formatted="false">Side-by-Side</string>
+    <string name="config_text_379" formatted="false">Over-Under</string>
+    <string name="config_text_380" formatted="false">Interlaced</string>
+    <string name="config_text_381" formatted="false">Anaglyph Red-Green</string>
+    <string name="config_text_382" formatted="false">Anaglyph Red-Blue</string>
+    <string name="config_text_383" formatted="false">Anaglyph Red-Cyan</string>
+    <string name="config_text_384" formatted="false">Anaglyph Magenta-Cyan</string>
+    <string name="config_text_385" formatted="false">Anaglyph Trioscopic</string>
+    <string name="config_text_386" formatted="false">Anaglyph Amber-Blue</string>
+    <string name="config_text_387" formatted="false">Anaglyph Custom</string>
+    <string name="config_text_388" formatted="false">Nearest</string>
+    <string name="config_text_389" formatted="false">Bilinear</string>
+    <string name="config_text_390" formatted="false">Accurate</string>
+    <string name="config_text_391" formatted="false">Approximate</string>
+    <string name="config_text_392" formatted="false">Relaxed</string>
+    <string name="config_text_393" formatted="false">Inaccurate</string>
+    <string name="config_text_394" formatted="false">yyyymmdd</string>
+    <string name="config_text_395" formatted="false">ddmmyyyy</string>
+    <string name="config_text_396" formatted="false">mmddyyyy</string>
+    <string name="config_text_397" formatted="false">clock12</string>
+    <string name="config_text_398" formatted="false">clock24</string>
+    <string name="config_text_399" formatted="false">Adaptive</string>
+    <string name="config_text_400" formatted="false">Full</string>
+    <string name="config_text_401" formatted="false">General</string>
+    <string name="config_text_402" formatted="false">RSX</string>
+    <string name="config_text_403" formatted="false">SPU</string>
+    <string name="config_text_404" formatted="false">PPU</string>
+    <string name="config_text_405" formatted="false">Japanese</string>
+    <string name="config_text_406" formatted="false">English (US)</string>
+    <string name="config_text_407" formatted="false">English (UK)</string>
+    <string name="config_text_408" formatted="false">English (United States)</string>
+    <string name="config_text_409" formatted="false">English (United Kingdom)</string>
+    <string name="config_text_410" formatted="false">French</string>
+    <string name="config_text_411" formatted="false">Spanish</string>
+    <string name="config_text_412" formatted="false">German</string>
+    <string name="config_text_413" formatted="false">Italian</string>
+    <string name="config_text_414" formatted="false">Dutch</string>
+    <string name="config_text_415" formatted="false">Portuguese (PT)</string>
+    <string name="config_text_416" formatted="false">Portuguese (BR)</string>
+    <string name="config_text_417" formatted="false">Russian</string>
+    <string name="config_text_418" formatted="false">Korean</string>
+    <string name="config_text_419" formatted="false">Chinese (Traditional)</string>
+    <string name="config_text_420" formatted="false">Chinese (Simplified)</string>
+    <string name="config_text_421" formatted="false">Finnish</string>
+    <string name="config_text_422" formatted="false">Swedish</string>
+    <string name="config_text_423" formatted="false">Danish</string>
+    <string name="config_text_424" formatted="false">Norwegian</string>
+    <string name="config_text_425" formatted="false">Polish</string>
+    <string name="config_text_426" formatted="false">Turkish</string>
+    <string name="config_text_427" formatted="false">Portuguese (Portugal)</string>
+    <string name="config_text_428" formatted="false">Portuguese (Brazil)</string>
+    <string name="config_text_429" formatted="false">Nothing</string>
+    <string name="config_text_430" formatted="false">Fatal</string>
+    <string name="config_text_431" formatted="false">Error</string>
+    <string name="config_text_432" formatted="false">Todo</string>
+    <string name="config_text_433" formatted="false">TODO</string>
+    <string name="config_text_434" formatted="false">Success</string>
+    <string name="config_text_435" formatted="false">Warning</string>
+    <string name="config_text_436" formatted="false">Notice</string>
+    <string name="config_text_437" formatted="false">Trace</string>
+    <string name="config_text_438" formatted="false">NoErrors</string>
+    <string name="config_text_439" formatted="false">GenericError</string>
+    <string name="config_text_440" formatted="false">NothingToBoot</string>
+    <string name="config_text_441" formatted="false">WrongDiscLocation</string>
+    <string name="config_text_442" formatted="false">InvalidFileOrFolder</string>
+    <string name="config_text_443" formatted="false">InvalidBDvdFolder</string>
+    <string name="config_text_444" formatted="false">InstallFailed</string>
+    <string name="config_text_445" formatted="false">DecryptionError</string>
+    <string name="config_text_446" formatted="false">FileCreationError</string>
+    <string name="config_text_447" formatted="false">FirmwareMissing</string>
+    <string name="config_text_448" formatted="false">UnsupportedDiscType</string>
+    <string name="config_text_449" formatted="false">SavestateCorrupted</string>
+    <string name="config_text_450" formatted="false">SavestateVersionUnsupported</string>
+    <string name="config_text_451" formatted="false">StillRunning</string>
+    <string name="config_text_452" formatted="false">AlreadyAdded</string>
+    <string name="config_text_453" formatted="false">CurrentlyRestricted</string>
+</resources>

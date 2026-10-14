@@ -1,7 +1,7 @@
 package net.rpcs3
 
 import net.rpcs3.utils.CpuSupport
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.hardware.display.DisplayManager
 import android.os.Handler
 import android.os.Looper
@@ -43,7 +43,7 @@ import kotlin.math.abs
 private const val HUD_REFRESH_MS = 500L
 private const val HUD_GRAPH_MS = 50L
 
-class RPCS3Activity : ComponentActivity() {
+class RPCS3Activity : AppCompatActivity() {
     private lateinit var binding: ActivityRpcs3Binding
     private lateinit var unregisterUsbEventListener: () -> Unit
     private var isoDescriptor: android.os.ParcelFileDescriptor? = null
@@ -74,6 +74,7 @@ class RPCS3Activity : ComponentActivity() {
             finish()
             return
         }
+        RPCS3.instance.setUiLanguage(resources.configuration.locales[0]?.language ?: "en")
         RPCS3.instance.surfaceHostAlive(true)
         binding = ActivityRpcs3Binding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -213,7 +214,7 @@ class RPCS3Activity : ComponentActivity() {
             if (bootResult != BootResult.NoErrors) {
                 AlertDialogQueue.showDialog(
                     getString(R.string.boot_failed_title),
-                    getString(R.string.boot_failed_error, bootResult.name)
+                    getString(R.string.boot_failed_error, net.rpcs3.ui.settings.ConfigText.label(this@RPCS3Activity, bootResult.name))
                 )
                 finish()
             }

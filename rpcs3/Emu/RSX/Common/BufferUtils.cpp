@@ -24,6 +24,7 @@
 #endif
 #undef FORCE_INLINE
 #include "Emu/CPU/sse2neon.h"
+#include "BufferUtils_neon_compact.h"
 #endif
 
 #if defined(_MSC_VER) || !defined(__SSE2__)
@@ -580,7 +581,7 @@ namespace
 		return std::make_tuple(min_index, max_index, written);
 	}
 
-	const upload_untouched_skip_restart_dispatch s_generic_upload_untouched_skip_restart_dispatch =
+	[[maybe_unused]] const upload_untouched_skip_restart_dispatch s_generic_upload_untouched_skip_restart_dispatch =
 	{
 		upload_untouched_skip_restart<u16>,
 		upload_untouched_skip_restart<u32>,
@@ -613,7 +614,16 @@ namespace
 			return s_avx512_upload_untouched_skip_restart_dispatch;
 		}
 #endif
+#if defined(ARCH_ARM64)
+		static const upload_untouched_skip_restart_dispatch s_neon =
+		{
+			upload_swapped_neon_skip_restart<u16>,
+			upload_swapped_neon_skip_restart<u32>,
+		};
+		return s_neon;
+#else
 		return s_generic_upload_untouched_skip_restart_dispatch;
+#endif
 	}();
 
 	template<typename T, typename U = remove_be_t<T>>

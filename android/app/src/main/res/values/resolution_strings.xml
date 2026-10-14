@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="video_output_mode">PS3 video mode</string>
-    <string name="video_output_mode_hint">Use 720p for compatibility. This changes the video mode reported to the game and requires restarting it. To increase detail, use Render scale below; select 1080p here only for games that support that mode.</string>
+    <string name="video_output_mode_hint">Selects the PS3 video mode reported to the game. 720p offers wider compatibility. Rendering scale controls image detail independently. Requires restarting the game.</string>
     <string name="render_scale">Render scale</string>
     <string name="render_scale_presets">Render presets</string>
     <string name="render_scale_100">100% · Native</string>
@@ -9,5 +9,5 @@
     <string name="render_scale_200">200% · 1440p*</string>
     <string name="render_scale_300">300% · 2160p*</string>
     <string name="render_scale_custom">%1$d%% · Custom</string>
-    <string name="render_scale_hint">* Sizes assume a game rendering at 1280×720. Actual dimensions depend on the game and which surfaces can be scaled. For a 1080p test, keep PS3 video mode at 720p and use 150%. Higher scales increase GPU load and memory use; restart for comparable tests.</string>
+    <string name="render_scale_hint">* Sizes assume a game rendering at 1280×720; actual dimensions depend on the game and scalable surfaces. A 150% scale produces 1920×1080 from a 720p source. Higher scales increase GPU and memory use.</string>
 </resources>

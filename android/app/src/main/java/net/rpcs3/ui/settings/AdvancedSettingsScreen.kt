@@ -73,7 +73,7 @@ fun AdvancedSettingsScreen(
             .then(modifier),
         contentWindowInsets = WindowInsets.safeDrawing,
         topBar = {
-            val titlePath = path.replace("@@", " / ")
+            val titlePath = ConfigText.path(context, path)
             LargeTopAppBar(
                 title = {
                     if (isSearching) {
@@ -161,7 +161,7 @@ fun AdvancedSettingsScreen(
                 .padding(contentPadding),
         ) {
             val filteredKeys = settings.keys().asSequence()
-                .filter { it.contains(searchQuery, ignoreCase = true) }
+                .filter { it.contains(searchQuery, ignoreCase = true) || ConfigText.label(context, it).contains(searchQuery, ignoreCase = true) }
                 .toList()
                 
             filteredKeys.forEach { key ->
@@ -170,7 +170,7 @@ fun AdvancedSettingsScreen(
                     val itemObject = settingValue.value[key] as? JSONObject
 
                     if (itemObject != null) {
-                        if (isResolutionSetting(itemPath) || isAndroidAudioBackendSetting(itemPath)) {
+                        if (isResolutionSetting(itemPath) || isAndroidAudioBackendSetting(itemPath) || isPpuStartupSetting(itemPath)) {
                             Column(Modifier.fillMaxWidth().padding(16.dp)) {
                                 SettingItem(
                                     label = key,
@@ -182,7 +182,7 @@ fun AdvancedSettingsScreen(
                         } else when (val type = if (itemObject.has("type")) itemObject.getString("type") else null) {
                              null -> {
                                 RegularPreference(
-                                    title = key,
+                                    title = ConfigText.label(context, key),
                                     leadingIcon = null,
                                     onClick = {
                                         navigateTo("settings$itemPath")
@@ -195,7 +195,7 @@ fun AdvancedSettingsScreen(
                                 val def = itemObject.getBoolean("default")
                                 SwitchPreference (
                                     checked = itemValue,
-                                    title = key + if (itemValue == def) "" else " *",
+                                    title = ConfigText.label(context, key) + if (itemValue == def) "" else " *",
                                     leadingIcon = null,
                                     onClick = { value ->
                                         if (!RPCS3.instance.settingsSet(itemPath, if (value) "true" else "false", RPCS3.settingsTitleId.value)) {
@@ -254,8 +254,9 @@ fun AdvancedSettingsScreen(
                                 SingleSelectionDialog(
                                     currentValue = if (itemValue in variants) itemValue else variants[0],
                                     values = variants,
+                                    valueToText = { ConfigText.label(context, it) },
                                     icon = null,
-                                    title = key + if (itemValue == def) "" else " *",
+                                    title = ConfigText.label(context, key) + if (itemValue == def) "" else " *",
                                     onValueChange = {
                                             value ->
                                         if (!RPCS3.instance.settingsSet(itemPath, "\"" + value + "\"", RPCS3.settingsTitleId.value)) {
@@ -320,7 +321,7 @@ fun AdvancedSettingsScreen(
                                     SliderPreference(
                                         value = itemValue.toFloat(),
                                         valueRange = min.toFloat()..max.toFloat(),
-                                        title = key + if (itemValue == def) "" else " *",
+                                        title = ConfigText.label(context, key) + if (itemValue == def) "" else " *",
                                         steps = (max - min).toInt(),
                                         onValueChange = { value ->
                                             if (!RPCS3.instance.settingsSet(
@@ -389,7 +390,7 @@ fun AdvancedSettingsScreen(
                                     SliderPreference(
                                         value = itemValue.toFloat(),
                                         valueRange = min.toFloat()..max.toFloat(),
-                                        title = key + if (itemValue == def) "" else " *",
+                                        title = ConfigText.label(context, key) + if (itemValue == def) "" else " *",
                                         steps = (max - min + 1).toInt(),
                                         onValueChange = { value ->
                                             if (!RPCS3.instance.settingsSet(
@@ -449,7 +450,7 @@ fun AdvancedSettingsScreen(
                                 var itemValue by remember { mutableStateOf(itemObject.getString("value")) }
                                 val def = itemObject.getString("default")
                                 TextPreference(
-                                    title = key + if (itemValue == def) "" else " *",
+                                    title = ConfigText.label(context, key) + if (itemValue == def) "" else " *",
                                     value = itemValue,
                                     placeholder = def,
                                     leadingIcon = null,
@@ -508,3 +509,4 @@ fun AdvancedSettingsScreen(
         }
     }
 }
+

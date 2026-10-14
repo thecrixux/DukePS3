@@ -75,6 +75,7 @@ fun SettingItem(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    val displayLabel = ConfigText.label(context, label)
 
     if (path.trimStart('@') == "Video@@Resolution" && item.optString("type") == "enum") {
         VideoOutputSetting(item, path, titleId, modifier) { next ->
@@ -96,16 +97,23 @@ fun SettingItem(
         return
     }
 
+    if (isPpuStartupSetting(path)) {
+        PpuStartupSetting(item, path, modifier) { next ->
+            commit(context, path, next, titleId, context.getString(R.string.ppu_startup_title))
+        }
+        return
+    }
+
     when (item.optString("type", "")) {
         "bool" -> {
             var value by remember(path) { mutableStateOf(item.optBoolean("value")) }
             val default = item.optBoolean("default")
             SettingSwitch(
-                label = label + if (value == default) "" else " *",
+                label = displayLabel + if (value == default) "" else " *",
                 checked = value,
                 modifier = modifier,
                 onCheckedChange = { next ->
-                    if (commit(context, path, if (next) "true" else "false", titleId, label)) {
+                    if (commit(context, path, if (next) "true" else "false", titleId, displayLabel)) {
                         item.put("value", next)
                         value = next
                     }
@@ -119,13 +127,13 @@ fun SettingItem(
             val default = item.optString("default")
             val index = variants.indexOf(value).coerceAtLeast(0)
             SettingInlineDropdown(
-                label = label + if (value == default) "" else " *",
-                entries = variants,
+                label = displayLabel + if (value == default) "" else " *",
+                entries = variants.map { ConfigText.label(context, it) },
                 selectedIndex = index,
                 modifier = modifier,
                 onSelected = { next ->
                     val chosen = variants.getOrNull(next) ?: return@SettingInlineDropdown
-                    if (commit(context, path, JSONObject.quote(chosen), titleId, label)) {
+                    if (commit(context, path, JSONObject.quote(chosen), titleId, displayLabel)) {
                         item.put("value", chosen)
                         value = chosen
                     }
@@ -141,7 +149,7 @@ fun SettingItem(
 
             if (min < max) {
                 SettingSlider(
-                    label = label + if (value.toLong() == default) "" else " *",
+                    label = displayLabel + if (value.toLong() == default) "" else " *",
                     value = value,
                     valueRange = min.toFloat()..max.toFloat(),
                     valueText = value.toLong().toString(),
@@ -149,7 +157,7 @@ fun SettingItem(
                     onValueChange = { value = it },
                     onValueChangeFinished = {
                         val next = value.toLong()
-                        if (commit(context, path, next.toString(), titleId, label)) {
+                        if (commit(context, path, next.toString(), titleId, displayLabel)) {
                             item.put("value", next)
                         }
                     }
@@ -157,14 +165,14 @@ fun SettingItem(
             } else {
                 var text by remember(path) { mutableStateOf(item.optLong("value").toString()) }
                 SettingTextField(
-                    label = label,
+                    label = displayLabel,
                     value = text,
                     modifier = modifier,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     onValueChange = { next ->
                         text = next
                         next.toLongOrNull()?.let {
-                            if (commit(context, path, it.toString(), titleId, label)) {
+                            if (commit(context, path, it.toString(), titleId, displayLabel)) {
                                 item.put("value", it)
                             }
                         }
@@ -180,14 +188,14 @@ fun SettingItem(
             val default = item.optDouble("default").toFloat()
 
             SettingSlider(
-                label = label + if (value == default) "" else " *",
+                label = displayLabel + if (value == default) "" else " *",
                 value = value,
                 valueRange = min..max,
                 valueText = String.format("%.2f", value),
                 modifier = modifier,
                 onValueChange = { value = it },
                 onValueChangeFinished = {
-                    if (commit(context, path, value.toString(), titleId, label)) {
+                    if (commit(context, path, value.toString(), titleId, displayLabel)) {
                         item.put("value", value.toDouble())
                     }
                 }
@@ -198,13 +206,13 @@ fun SettingItem(
             var value by remember(path) { mutableStateOf(item.optString("value")) }
             val default = item.optString("default")
             SettingTextField(
-                label = label + if (value == default) "" else " *",
+                label = displayLabel + if (value == default) "" else " *",
                 value = value,
                 placeholder = default,
                 modifier = modifier,
                 onValueChange = { next ->
                     value = next
-                    if (commit(context, path, JSONObject.quote(next), titleId, label)) {
+                    if (commit(context, path, JSONObject.quote(next), titleId, displayLabel)) {
                         item.put("value", next)
                     }
                 }
@@ -214,8 +222,9 @@ fun SettingItem(
         else -> {
             val raw = item.opt("value")?.toString().orEmpty()
             if (raw.isNotEmpty()) {
-                InfoRow(label = label, value = raw.take(80))
+                InfoRow(label = displayLabel, value = raw.take(80))
             }
         }
     }
 }
+

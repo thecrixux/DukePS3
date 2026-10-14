@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_language_title">Language / Idioma</string>
+    <string name="app_language_system">Idioma del sistema</string>
+    <string name="app_language_hint">Cambia el idioma de la interfaz. El idioma de la consola PS3 se configura por separado en Sistema PS3.</string>
+</resources>

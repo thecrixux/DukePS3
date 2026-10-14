@@ -75,8 +75,9 @@ enum class BootResult
 };
 
 class RPCS3 {
+    external fun setUiLanguage(language: String)
     external fun initialize(rootDir: String): Boolean
-    external fun installFw(fd: Int, progressId: Long): Boolean
+    external fun installFw(fd: Int, progressId: Long, prepareCache: Boolean = true): Boolean
     external fun install(fd: Int, progressId: Long, name: String): Boolean
     external fun installPackages(fds: IntArray, names: Array<String>, progressId: Long): Boolean
     external fun pkgInfo(fd: Int): String

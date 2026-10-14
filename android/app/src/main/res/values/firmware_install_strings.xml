@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="firmware_install_title">Firmware installation</string>
+    <string name="firmware_install_hint">Both modes install and verify all firmware files. Choose when its module cache is prepared.</string>
+    <string name="firmware_install_complete">Normal installation</string>
+    <string name="firmware_install_fast">Fast installation</string>
+    <string name="firmware_install_complete_detail">Also prepares the firmware module cache now. Installation takes longer.</string>
+    <string name="firmware_install_fast_detail">Prepares firmware modules as games need them. Some games may take longer on their first launch.</string>
+    <string name="firmware_select_file">Select PUP file</string>
+</resources>

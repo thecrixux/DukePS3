@@ -71,6 +71,44 @@
 
 #include "Utilities/sema.h"
 
+#ifdef __ANDROID__
+#include "PPUCompilePolicy.h"
+#include <cerrno>
+#include <fstream>
+#include <sys/resource.h>
+
+static bool ppu_startup_phase()
+{
+	const auto state = Emu.GetStatus(false);
+	return duke::ppu::startup_preparation.load() || state == system_state::loading || state == system_state::ready || state == system_state::starting;
+}
+
+static bool ppu_normal_startup_priority()
+{
+	return g_cfg.core.android_ppu_normal_priority && ppu_startup_phase();
+}
+
+struct ppu_process_memory
+{
+	u64 rss_kib = 0;
+	u64 peak_kib = 0;
+};
+
+static ppu_process_memory ppu_read_process_memory()
+{
+	ppu_process_memory result;
+	std::ifstream input("/proc/self/status");
+	std::string key, rest;
+	while (input >> key)
+	{
+		if (key == "VmRSS:") input >> result.rss_kib;
+		else if (key == "VmHWM:") input >> result.peak_kib;
+		std::getline(input, rest);
+	}
+	return result;
+}
+#endif
+
 #ifdef __APPLE__
 #include <libkern/OSCacheControl.h>
 #endif
@@ -3868,6 +3906,14 @@ struct jit_core_allocator
 
 #ifdef __ANDROID__
 	atomic_t<u32> low_memory_claim{0};
+	duke::ppu::admission_gate compile_gate;
+
+	unsigned admission_limit() const
+	{
+		const unsigned profile = ppu_startup_phase() ? static_cast<unsigned>(g_cfg.core.android_ppu_compile_profile.get()) : 0;
+		return std::min<unsigned>(std::max<s16>(thread_count, 1), duke::ppu::worker_limit(
+			utils::get_avail_memory(), utils::get_total_memory(), utils::get_thread_count(), profile));
+	}
 
 	static bool memory_is_tight()
 	{
@@ -3900,24 +3946,12 @@ struct jit_core_allocator
 		const s32 by_cores = std::min<s32>(0x7fff, utils::get_thread_count());
 
 #ifdef __ANDROID__
-		if (const u64 avail_mem = utils::get_avail_memory())
-		{
-			constexpr u64 emulator_reserve = 2048ull * 1024 * 1024;
-			constexpr u64 per_worker = 1536ull * 1024 * 1024;
-
-			const u64 spare = (avail_mem > emulator_reserve) ? avail_mem - emulator_reserve : 0;
-			const s32 by_memory = static_cast<s32>(spare / per_worker);
-			return static_cast<s16>(std::max<s32>(1, std::min<s32>(by_cores, by_memory)));
-		}
-
-		if (const u64 total_mem = utils::get_total_memory())
-		{
-			const s32 by_memory = static_cast<s32>(total_mem / (3072ull * 1024 * 1024));
-			return static_cast<s16>(std::max<s32>(1, std::min<s32>(by_cores, by_memory)));
-		}
-#endif
-
+		const unsigned profile = ppu_startup_phase() ? static_cast<unsigned>(g_cfg.core.android_ppu_compile_profile.get()) : 0;
+		return static_cast<s16>(duke::ppu::worker_limit(utils::get_avail_memory(),
+			utils::get_total_memory(), static_cast<unsigned>(by_cores), profile));
+#else
 		return static_cast<s16>(by_cores);
+#endif
 	}
 };
 
@@ -4162,10 +4196,15 @@ extern void ppu_finalize(const ppu_module<lv2_obj>& info, bool force_mem_release
 	}
 
 	// Get cache path for this executable
-	std::string cache_path = rpcs3::utils::get_cache_dir(info.path);
-
-	// Add PPU hash and filename
-	fmt::append(cache_path, "ppu-%s-%s/", fmt::base57(info.sha1), info.path.substr(info.path.find_last_of('/') + 1));
+	std::string cache_path = info.cache;
+	if (cache_path.empty())
+	{
+		cache_path = rpcs3::utils::get_cache_dir(info.path);
+		fmt::append(cache_path, "ppu-%s-%s/", fmt::base57(info.sha1), info.path.substr(info.path.find_last_of('/') + 1));
+	}
+#ifdef __ANDROID__
+	duke::ppu::select_test_cache(cache_path, static_cast<unsigned>(g_cfg.core.android_ppu_test_cache_slot.get()));
+#endif
 
 #ifdef LLVM_AVAILABLE
 	g_fxo->get<jit_module_manager>().remove(cache_path + "_" + std::to_string(std::bit_cast<usz>(info.segs[0].ptr)));
@@ -4473,7 +4512,12 @@ extern void ppu_precompile(std::vector<std::string>& dir_queue, std::vector<ppu_
 		jit_write_guard jit_guard;
 
 		// Set low priority
+#ifdef __ANDROID__
+		std::optional<thread_ctrl::scoped_priority> low_prio;
+		if (!ppu_normal_startup_priority()) low_prio.emplace(-1);
+#else
 		thread_ctrl::scoped_priority low_prio(-1);
+#endif
 		u32 inc_fdone = 1;
 		u32 restore_mem = 0;
 
@@ -4698,7 +4742,12 @@ extern void ppu_precompile(std::vector<std::string>& dir_queue, std::vector<ppu_
 		}
 
 		// Set low priority
+#ifdef __ANDROID__
+		std::optional<thread_ctrl::scoped_priority> low_prio;
+		if (!ppu_normal_startup_priority()) low_prio.emplace(-1);
+#else
 		thread_ctrl::scoped_priority low_prio(-1);
+#endif
 
 		auto slice = possible_exec_file_paths.pop_all();
 
@@ -4968,13 +5017,32 @@ bool ppu_initialize(const ppu_module<lv2_obj>& info, bool check_only, u64 file_s
 	struct log_guard
 	{
 		const std::chrono::steady_clock::time_point started = std::chrono::steady_clock::now();
+#ifdef __ANDROID__
+		const std::string* path = nullptr;
+		bool record = false;
+		u32 cache_hits = 0;
+		u32 cache_misses = 0;
+#endif
 
 		~log_guard() noexcept
 		{
+#ifdef __ANDROID__
+			if (record)
+			{
+				const auto memory = ppu_read_process_memory();
+				ppu_log.notice("Duke PPU module: file=%s wall_ms=%llu cache_hits=%u cache_misses=%u test_slot=%d rss_kib=%llu process_peak_kib=%llu",
+					*path, static_cast<u64>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - started).count()),
+					cache_hits, cache_misses, g_cfg.core.android_ppu_test_cache_slot.get(), memory.rss_kib, memory.peak_kib);
+			}
+#endif
 			ppu_log.notice("Leaving ppu_initialize(const ppu_module&..) elapsed=%llu ms",
 				static_cast<u64>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - started).count()));
 		}
 	} _log_guard;
+#ifdef __ANDROID__
+	_log_guard.path = &info.path;
+	_log_guard.record = !check_only && g_cfg.core.android_ppu_compile_diagnostics;
+#endif
 
 	if (g_cfg.core.ppu_decoder != ppu_decoder_type::llvm)
 	{
@@ -5078,6 +5146,17 @@ bool ppu_initialize(const ppu_module<lv2_obj>& info, bool check_only, u64 file_s
 			fmt::throw_exception("Failed to create cache directory: %s (%s)", cache_path, fs::g_tls_error);
 		}
 	}
+
+#ifdef __ANDROID__
+	if (const auto slot = g_cfg.core.android_ppu_test_cache_slot.get())
+	{
+		duke::ppu::select_test_cache(cache_path, static_cast<unsigned>(slot));
+		if (!fs::create_path(cache_path))
+		{
+			fmt::throw_exception("Failed to create PPU test cache: %s (%s)", cache_path, fs::g_tls_error);
+		}
+	}
+#endif
 
 #ifdef LLVM_AVAILABLE
 	std::optional<scoped_progress_dialog> progress_dialog;
@@ -5701,6 +5780,9 @@ bool ppu_initialize(const ppu_module<lv2_obj>& info, bool check_only, u64 file_s
 		// Check object file
 		if (jit_compiler::check(cache_path + obj_name))
 		{
+#ifdef __ANDROID__
+			++_log_guard.cache_hits;
+#endif
 			if (!is_being_used_in_emulation && !check_only)
 			{
 				ppu_log.success("LLVM: Module exists: %s", obj_name);
@@ -5715,6 +5797,9 @@ bool ppu_initialize(const ppu_module<lv2_obj>& info, bool check_only, u64 file_s
 			return true;
 		}
 
+#ifdef __ANDROID__
+		++_log_guard.cache_misses;
+#endif
 		// Remember, used in ppu_initialize(void)
 		compiled_new = true;
 
@@ -5738,6 +5823,19 @@ bool ppu_initialize(const ppu_module<lv2_obj>& info, bool check_only, u64 file_s
 	// Create worker threads for compilation
 	if (!workload.empty())
 	{
+#ifdef __ANDROID__
+		const auto group_started = std::chrono::steady_clock::now();
+		atomic_t<u64> permit_wait_us{0};
+		if (g_cfg.core.android_ppu_compile_diagnostics)
+		{
+			const auto profile = static_cast<unsigned>(g_cfg.core.android_ppu_compile_profile.get());
+			const auto memory = ppu_read_process_memory();
+			ppu_log.notice("Duke PPU policy: profile=%u startup=%u allocator_limit=%d active_limit=%u budget_mib=%llu reserve_mib=2048 requested_max=%d test_slot=%d rss_kib=%llu",
+				profile, ppu_startup_phase(), g_fxo->get<jit_core_allocator>().thread_count,
+				g_fxo->get<jit_core_allocator>().admission_limit(), duke::ppu::worker_budget(ppu_startup_phase() ? profile : 0) / duke::ppu::mib,
+				g_cfg.core.llvm_threads.get(), g_cfg.core.android_ppu_test_cache_slot.get(), memory.rss_kib);
+		}
+#endif
 		// Sync variable to acquire workloads
 		atomic_t<u64> work_cv = 0;
 		atomic_t<u64> work_done = 0;
@@ -5807,7 +5905,20 @@ bool ppu_initialize(const ppu_module<lv2_obj>& info, bool check_only, u64 file_s
 			void operator()()
 			{
 				// Set low priority
+#ifdef __ANDROID__
+				std::optional<thread_ctrl::scoped_priority> low_prio;
+				if (!ppu_normal_startup_priority()) low_prio.emplace(-1);
+				if (g_cfg.core.android_ppu_compile_diagnostics)
+				{
+					errno = 0;
+					const int nice_value = getpriority(PRIO_PROCESS, 0);
+					const int nice_error = errno;
+					ppu_log.notice("Duke PPU worker: startup=%u keep_inherited_priority=%u nice=%d nice_errno=%d",
+						ppu_startup_phase(), ppu_normal_startup_priority(), nice_value, nice_error);
+				}
+#else
 				thread_ctrl::scoped_priority low_prio(-1);
+#endif
 
 #ifdef __APPLE__
 				pthread_jit_write_protect_np(false);
@@ -5822,6 +5933,11 @@ bool ppu_initialize(const ppu_module<lv2_obj>& info, bool check_only, u64 file_s
 					// Keep allocating workload
 					const auto& [obj_name, part] = std::as_const(workload)[i];
 					const auto compile_started = std::chrono::steady_clock::now();
+#ifdef __ANDROID__
+					u64 admission_ms = 0;
+					u64 jit_init_ms = 0;
+					u64 compile_ms = 0;
+#endif
 
 					ppu_log.warning("LLVM: Compiling module %s%s", cache_path, obj_name);
 
@@ -5841,7 +5957,17 @@ bool ppu_initialize(const ppu_module<lv2_obj>& info, bool check_only, u64 file_s
 							}
 						} serialise_compiles;
 
-						if (jit_core_allocator::memory_is_tight())
+						const auto admission_started = std::chrono::steady_clock::now();
+						std::optional<duke::ppu::admission_gate::lease> admission;
+						if (g_cfg.core.android_ppu_compile_profile.get() != 0)
+						{
+							auto& allocator = g_fxo->get<jit_core_allocator>();
+							admission.emplace(allocator.compile_gate, [&] { return allocator.admission_limit(); },
+								[&] { return cpu ? cpu->state.all_of(cpu_flag::exit) : Emu.IsStopped(); });
+							if (!static_cast<bool>(*admission)) continue;
+							jit_core_allocator::wait_for_memory();
+						}
+						else if (jit_core_allocator::memory_is_tight())
 						{
 							auto& claim = g_fxo->get<jit_core_allocator>().low_memory_claim;
 
@@ -5863,12 +5989,30 @@ bool ppu_initialize(const ppu_module<lv2_obj>& info, bool check_only, u64 file_s
 
 							jit_core_allocator::wait_for_memory();
 						}
+						if (cpu ? cpu->state.all_of(cpu_flag::exit) : Emu.IsStopped()) continue;
+						const auto jit_started = std::chrono::steady_clock::now();
+						admission_ms = static_cast<u64>(std::chrono::duration_cast<std::chrono::milliseconds>(jit_started - admission_started).count());
 #endif
 						// Use another JIT instance
 						jit_compiler jit2({}, g_cfg.core.llvm_cpu.to_string(), 0x1);
+#ifdef __ANDROID__
+						const auto translation_started = std::chrono::steady_clock::now();
+						jit_init_ms = static_cast<u64>(std::chrono::duration_cast<std::chrono::milliseconds>(translation_started - jit_started).count());
+#endif
 						ppu_initialize2(jit2, part, cache_path, obj_name);
+#ifdef __ANDROID__
+						compile_ms = static_cast<u64>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - translation_started).count());
+#endif
 					}
 
+#ifdef __ANDROID__
+					if (g_cfg.core.android_ppu_compile_diagnostics)
+					{
+						ppu_log.notice("Duke PPU job: object=%s admission_ms=%llu jit_init_ms=%llu translate_codegen_ms=%llu free_mib=%llu allocator_peak=%u",
+							obj_name, admission_ms, jit_init_ms, compile_ms, utils::get_avail_memory() / duke::ppu::mib,
+							g_fxo->get<jit_core_allocator>().compile_gate.peak());
+					}
+#endif
 					ppu_log.success("LLVM: Compiled module %s elapsed=%llu ms", obj_name,
 						static_cast<u64>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - compile_started).count()));
 				}
@@ -5891,7 +6035,13 @@ bool ppu_initialize(const ppu_module<lv2_obj>& info, bool check_only, u64 file_s
 			}
 
 			// Allocate "core"
+#ifdef __ANDROID__
+			const auto permit_started = std::chrono::steady_clock::now();
+#endif
 			op.core_lock.lock();
+#ifdef __ANDROID__
+			permit_wait_us.fetch_add(static_cast<u64>(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - permit_started).count()));
+#endif
 
 			// Second check before creating another thread
 			const bool to_unlock = !((thread_index + *op.work_done) < workload.size() && (cpu ? !cpu->state.all_of(cpu_flag::exit) : !Emu.IsStopped()));
@@ -5921,7 +6071,14 @@ bool ppu_initialize(const ppu_module<lv2_obj>& info, bool check_only, u64 file_s
 		}
 
 		threads.join();
-		
+#ifdef __ANDROID__
+		if (g_cfg.core.android_ppu_compile_diagnostics)
+		{
+			ppu_log.notice("Duke PPU group: jobs=%u wall_ms=%llu permit_wait_sum_us=%llu",
+				::size32(workload), static_cast<u64>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - group_started).count()),
+				permit_wait_us.load());
+		}
+#endif
 		thread_ctrl::set_name(old_name);
 		g_watchdog_hold_ctr--;
 	}

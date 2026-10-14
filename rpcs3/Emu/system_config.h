@@ -23,6 +23,14 @@ struct cfg_root : cfg::node
 		cfg::string llvm_cpu{ this, "Use LLVM CPU" };
 		cfg::_int<0, 1024> llvm_threads{ this, "Max LLVM Compile Threads", 0, false, nullptr, []{ return std::thread::hardware_concurrency() * 2; } };
 		cfg::_bool llvm_precompilation{ this, "LLVM Precompilation", true };
+#ifdef __ANDROID__
+		// Experimental scheduling; the default preserves the existing policy.
+		cfg::_int<0, 2> android_ppu_compile_profile{this, "Android PPU Compile Profile", 0};
+		cfg::_bool android_ppu_normal_priority{this, "Android PPU Normal Startup Priority", false};
+		cfg::_bool android_ppu_compile_diagnostics{this, "Android PPU Compile Diagnostics", false};
+		// 0 uses the normal cache; 1-9 isolate tests without deleting user data.
+		cfg::_int<0, 9> android_ppu_test_cache_slot{this, "Android PPU Test Cache Slot", 0};
+#endif
 		cfg::_enum<thread_scheduler_mode> thread_scheduler{this, "Thread Scheduler Mode", thread_scheduler_mode::os};
 		cfg::_bool set_daz_and_ftz{ this, "Set DAZ and FTZ", false };
 		cfg::_enum<spu_decoder_type> spu_decoder{ this, "SPU Decoder", spu_decoder_type::llvm };
